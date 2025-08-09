@@ -1,0 +1,27 @@
+{
+  "name": "pad",
+  "version": "1.0.0",
+  "description": "Pine At Dawn",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && npm run dev"
+  },
+  "keywords": [
+    "pad",
+    "pine at dawn",
+    "pineatdawn"
+  ],
+  "author": "Pine At Dawn",
+  "license": "MIT",
+  "type": "commonjs",
+  "devDependencies": {
+    "concurrently": "^9.2.0",
+    "prettier": "^3.6.2"
+  }
+}
