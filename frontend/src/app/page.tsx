@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { headers } from "next/headers";
 import NewNoteForm from "@/components/NewNoteForm";
+type Note = { _id: string; title: string; body?: string };
 
 export default async function Page() {
   const h = await headers();
@@ -12,7 +13,7 @@ export default async function Page() {
   const data = await res.json();
 
   const notesRes = await fetch(`${baseUrl}/api/notes`, { cache: "no-store" });
-  const notes = await notesRes.json();
+  const notes = (await notesRes.json()) as Note[];
 
   return (
     <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
@@ -75,7 +76,7 @@ export default async function Page() {
         <div className="space-y-2">
           <h3 className="font-semibold">Notes</h3>
           {Array.isArray(notes) && notes.length > 0 ? (
-            notes.map((n: any) => (
+            notes.map((n) => (
               <div key={n._id} className="border p-2 rounded">
                 <div className="font-medium">{n.title}</div>
                 {n.body && <div className="text-sm opacity-80">{n.body}</div>}
