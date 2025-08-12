@@ -89,9 +89,16 @@ export default function VoiceTutor() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ title: new Date().toLocaleString() }),
     });
-    const data = await r.json();
-    setSessionId(data._id);
-    return data._id as string;
+    const text = await r.text();
+    let parsed: unknown;
+    try { parsed = JSON.parse(text); } catch {}
+    const id =
+      parsed && typeof parsed === "object" && "_id" in parsed && typeof (parsed as { _id: unknown })._id === "string"
+        ? (parsed as { _id: string })._id
+        : undefined;
+    if (!r.ok || !id) throw new Error("Failed to create chat session");
+    setSessionId(id);
+    return id;
   }
 
   async function saveMessage(sid: string, msg: { role: "user" | "assistant"; text: string; correction?: string }) {
