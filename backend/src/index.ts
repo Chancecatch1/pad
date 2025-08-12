@@ -3,15 +3,15 @@ import cors from "cors";
 import dotenv from "dotenv";
 import { connectDB } from "./db";
 import { Note } from "./models/Note";
+import { ChatSession } from "./models/Chat";
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT ? Number(process.env.PORT) : 4000;
-const CORS_ORIGIN = process.env.CORS_ORIGIN || "http://localhost:3000";
 const MONGODB_URI = process.env.MONGODB_URI as string;
-
-app.use(cors({ origin: CORS_ORIGIN, credentials: true }));
+const ALLOWED_ORIGINS = (process.env.CORS_ORIGIN || "http://localhost:3000,https://pineatdawn.me").split(",").map((s) => s.trim());
+app.use(cors({ origin: ALLOWED_ORIGINS, credentials: true }));
 app.use(express.json());
 
 app.get("/health", (_req, res) => {
@@ -30,6 +30,40 @@ app.post("/notes", async (req, res) => {
   } catch (e) {
     res.status(400).json({ error: "invalid payload" });
   }
+});
+
+// 세션 목록
+app.get("/chat/sessions", async (_req, res) => {
+  const list = await ChatSession.find().sort({ updatedAt: -1 }).lean();
+  res.json(list);
+});
+
+// 세션 생성
+app.post("/chat/sessions", async (req, res) => {
+  const { title, clientId } = req.body || {};
+  const sess = await ChatSession.create({ title, clientId, messages: [] });
+  res.status(201).json(sess);
+});
+
+// 세션 단건 조회
+app.get("/chat/sessions/:id", async (req, res) => {
+  const sess = await ChatSession.findById(req.params.id).lean();
+  if (!sess) return res.status(404).json({ error: "not_found" });
+  res.json(sess);
+});
+
+// 메시지 추가
+app.post("/chat/sessions/:id/messages", async (req, res) => {
+  const { role, text, correction, explanation } = req.body || {};
+  if (!role || !text) return res.status(400).json({ error: "invalid_payload" });
+
+  const sess = await ChatSession.findByIdAndUpdate(
+    req.params.id,
+    { $push: { messages: { role, text, correction, explanation } } },
+    { new: true }
+  );
+  if (!sess) return res.status(404).json({ error: "not_found" });
+  res.status(201).json(sess);
 });
 
 async function start() {
