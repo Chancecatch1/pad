@@ -5,6 +5,7 @@ import { useRef, useState } from "react";
 type Msg = { role: "user" | "assistant"; text: string; correction?: string };
 
 export default function VoiceTutor() {
+  const [pendingAudioUrl, setPendingAudioUrl] = useState<string | null>(null);
   const [messages, setMessages] = useState<Msg[]>([]);
   const [recording, setRecording] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -38,8 +39,13 @@ export default function VoiceTutor() {
         });
         const blob = await ttsRes.blob();
         const url = URL.createObjectURL(blob);
-        const audio = new Audio(url);
-        audio.play();
+
+        try {
+          await new Audio(url).play();
+          URL.revokeObjectURL(url);
+        } catch {
+          setPendingAudioUrl(url);
+        }
       }
     } finally {
       setBusy(false);
@@ -129,6 +135,24 @@ export default function VoiceTutor() {
         >
           Type instead
         </button>
+
+        {pendingAudioUrl && (
+          <button
+            className="border px-3 py-2 rounded"
+            onClick={async () => {
+              try {
+                const a = new Audio(pendingAudioUrl);
+                await a.play();
+              } finally {
+                if (pendingAudioUrl) URL.revokeObjectURL(pendingAudioUrl);
+                setPendingAudioUrl(null);
+              }
+            }}
+          >
+            Tap to play
+          </button>
+        )}
+        
         {busy && <div className="text-sm opacity-70">Processing…</div>}
       </div>
 
