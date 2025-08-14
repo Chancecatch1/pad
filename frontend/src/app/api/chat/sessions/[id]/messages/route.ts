@@ -1,10 +1,5 @@
-export async function POST(req: Request, ctx: unknown) {
-  const params =
-    ctx && typeof ctx === "object" && "params" in ctx
-      ? (ctx as { params?: { id?: string } }).params
-      : undefined;
-
-  const id = params?.id;
+export async function POST(req: Request, ctx: { params: Promise<{ id?: string }> }) {
+  const { id } = await ctx.params;
   if (!id) return Response.json({ error: "missing_id" }, { status: 400 });
 
   const base = process.env.BACKEND_API_BASE ?? "http://localhost:4000";

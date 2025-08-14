@@ -1,34 +1,51 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import Button from "@/components/Button";
 
 type Msg = { role: "user" | "assistant"; text: string; correction?: string };
+type Props = {
+  sessionId?: string | null;
+  onSession?: (id: string) => void;
+  history?: Msg[];
+  onMessage?: (msg: Msg) => void;
+  hideMessages?: boolean;
+  compact?: boolean;
+};
 
-export default function VoiceTutor() {
+export default function VoiceTutor({ sessionId: extSessionId = null, onSession, history: extHistory, onMessage, hideMessages = false, compact = false }: Props) {
   const [pendingAudioUrl, setPendingAudioUrl] = useState<string | null>(null);
   const [messages, setMessages] = useState<Msg[]>([]);
   const [recording, setRecording] = useState(false);
   const [busy, setBusy] = useState(false);
   const recorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<BlobPart[]>([]);
-  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [sessionId, setSessionId] = useState<string | null>(extSessionId);
+  const [showTypeBox, setShowTypeBox] = useState(false);
+  const [manualText, setManualText] = useState("");
+
+  useEffect(() => {
+    if (extSessionId && extSessionId !== sessionId) setSessionId(extSessionId);
+  }, [extSessionId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function sendToChat(userText: string) {
     const sid = await ensureSession();
     await saveMessage(sid, { role: "user", text: userText });
+    onMessage?.({ role: "user", text: userText });
     setBusy(true);
     setMessages((m) => [...m, { role: "user", text: userText }]);
     try {
-      const history = messages.map((m) => ({ role: m.role, content: m.text }));
+      const historyTurns = (extHistory ?? messages).map((m) => ({ role: m.role, content: m.text }));
       const r = await fetch("/api/tutor/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: userText, history }),
+        body: JSON.stringify({ message: userText, history: historyTurns }),
       });
       const data = await r.json();
       const reply = data?.reply ?? "";
       const correction = data?.correction ?? "";
       setMessages((m) => [...m, { role: "assistant", text: reply, correction }]);
+      onMessage?.({ role: "assistant", text: reply, correction });
 
       if (reply) {
         await saveMessage(sid, { role: "assistant", text: reply, correction });
@@ -104,6 +121,7 @@ export default function VoiceTutor() {
         : undefined;
     if (!r.ok || !id) throw new Error("Failed to create chat session");
     setSessionId(id);
+    onSession?.(id);
     return id;
   }
 
@@ -116,29 +134,18 @@ export default function VoiceTutor() {
   }
 
   return (
-    <div className="w-full max-w-xl space-y-3 border p-3 rounded">
+    <div className={compact ? "w-full space-y-2" : "w-full max-w-xl space-y-3 border p-3 rounded"}>
       <div className="flex items-center gap-2">
-        <button
-          onClick={recording ? stopRec : startRec}
-          className={`px-4 py-2 rounded ${recording ? "bg-red-600 text-white" : "border"}`}
-          disabled={busy}
-        >
-          {recording ? "Stop" : "Hold to Talk"}
-        </button>
-        <button
-          onClick={async () => {
-            const text = prompt("Type to chat:");
-            if (text) await sendToChat(text);
-          }}
-          className="border px-3 py-2 rounded"
-          disabled={busy}
-        >
-          Type instead
-        </button>
+        <Button onClick={recording ? stopRec : startRec} disabled={busy} variant="apple" size={compact ? "sm" : "md"}>
+          {recording ? "Stop" : "Sending Voice"}
+        </Button>
+        <Button onClick={() => setShowTypeBox((v) => !v)} disabled={busy} variant="apple" size={compact ? "sm" : "md"}>
+          Type
+        </Button>
 
         {pendingAudioUrl && (
           <button
-            className="border px-3 py-2 rounded"
+            className={compact ? "border px-3 py-1.5 rounded text-sm" : "border px-3 py-2 rounded"}
             onClick={async () => {
               try {
                 const a = new Audio(pendingAudioUrl);
@@ -153,21 +160,44 @@ export default function VoiceTutor() {
           </button>
         )}
         
-        {busy && <div className="text-sm opacity-70">Processing…</div>}
+        {busy && <div className={compact ? "text-xs opacity-70" : "text-sm opacity-70"}>Processing…</div>}
       </div>
 
-      <div className="space-y-2">
-        {messages.map((m, i) => (
-          <div key={i} className="text-sm">
-            <div className={m.role === "user" ? "font-medium" : "text-blue-700"}>
-              {m.role === "user" ? "You" : "Tutor"}: {m.text}
+      {showTypeBox && (
+        <form
+          className="flex items-center gap-2"
+          onSubmit={async (e) => {
+            e.preventDefault();
+            const t = manualText.trim();
+            if (!t || busy) return;
+            setManualText("");
+            await sendToChat(t);
+          }}
+        >
+          <input
+            className="flex-1 border p-2 rounded"
+            placeholder="Type a message..."
+            value={manualText}
+            onChange={(e) => setManualText(e.target.value)}
+          />
+          <Button disabled={busy || !manualText.trim()} type="submit" variant="apple" size={compact ? "sm" : "md"}>Send</Button>
+        </form>
+      )}
+
+      {!hideMessages && (
+        <div className="space-y-2">
+          {messages.map((m, i) => (
+            <div key={i} className="text-sm">
+              <div className={m.role === "user" ? "font-medium" : "text-blue-700"}>
+                {m.role === "user" ? "You" : "Tutor"}: {m.text}
+              </div>
+              {m.correction && (
+                <div className="opacity-70">Correction: {m.correction}</div>
+              )}
             </div>
-            {m.correction && (
-              <div className="opacity-70">Correction: {m.correction}</div>
-            )}
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Button from "@/components/Button";
 
 export default function NewNoteForm() {
   const [title, setTitle] = useState("");
@@ -36,7 +37,7 @@ export default function NewNoteForm() {
         value={body}
         onChange={(e) => setBody(e.target.value)}
       />
-      <button className="border px-3 py-2 rounded">Add Note</button>
+      <Button type="submit" variant="apple">Add Note</Button>
     </form>
   );
 }
