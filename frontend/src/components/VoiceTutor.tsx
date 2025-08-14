@@ -11,10 +11,18 @@ type Props = {
   onMessage?: (msg: Msg) => void;
   hideMessages?: boolean;
   compact?: boolean;
+  roleConfig?: {
+    persona?: string;
+    scenario?: string;
+    materials?: string | string[];
+    level?: string;
+    targetPhrases?: string[];
+  };
 };
 
-export default function VoiceTutor({ sessionId: extSessionId = null, onSession, history: extHistory, onMessage, hideMessages = false, compact = false }: Props) {
+export default function VoiceTutor({ sessionId: extSessionId = null, onSession, history: extHistory, onMessage, hideMessages = false, compact = false, roleConfig }: Props) {
   const [pendingAudioUrl, setPendingAudioUrl] = useState<string | null>(null);
+  const [lastTutorAudioUrl, setLastTutorAudioUrl] = useState<string | null>(null);
   const [messages, setMessages] = useState<Msg[]>([]);
   const [recording, setRecording] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -39,7 +47,7 @@ export default function VoiceTutor({ sessionId: extSessionId = null, onSession, 
       const r = await fetch("/api/tutor/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: userText, history: historyTurns }),
+        body: JSON.stringify({ message: userText, history: historyTurns, ...(roleConfig || {})}),
       });
       const data = await r.json();
       const reply = data?.reply ?? "";
@@ -57,9 +65,14 @@ export default function VoiceTutor({ sessionId: extSessionId = null, onSession, 
         const blob = await ttsRes.blob();
         const url = URL.createObjectURL(blob);
 
+        // Clean up previous tutor audio URL
+        if (lastTutorAudioUrl) {
+          URL.revokeObjectURL(lastTutorAudioUrl);
+        }
+        setLastTutorAudioUrl(url);
+
         try {
           await new Audio(url).play();
-          URL.revokeObjectURL(url);
         } catch {
           setPendingAudioUrl(url);
         }
@@ -136,29 +149,48 @@ export default function VoiceTutor({ sessionId: extSessionId = null, onSession, 
   return (
     <div className={compact ? "w-full space-y-2" : "w-full max-w-xl space-y-3 border p-3 rounded"}>
       <div className="flex items-center gap-2">
-        <Button onClick={recording ? stopRec : startRec} disabled={busy} variant="apple" size={compact ? "sm" : "md"}>
+        <Button 
+          onClick={recording ? stopRec : startRec} 
+          disabled={busy} 
+          variant="apple" 
+          size={compact ? "sm" : "md"}
+          className={compact ? "h-6 px-2 text-xs" : "h-7 px-3 text-xs"}
+        >
           {recording ? "Stop" : "Sending Voice"}
         </Button>
-        <Button onClick={() => setShowTypeBox((v) => !v)} disabled={busy} variant="apple" size={compact ? "sm" : "md"}>
-          Type
-        </Button>
-
-        {pendingAudioUrl && (
-          <button
-            className={compact ? "border px-3 py-1.5 rounded text-sm" : "border px-3 py-2 rounded"}
-            onClick={async () => {
+        
+        <Button 
+          onClick={async () => {
+            const audioUrl = pendingAudioUrl || lastTutorAudioUrl;
+            if (audioUrl) {
               try {
-                const a = new Audio(pendingAudioUrl);
+                const a = new Audio(audioUrl);
                 await a.play();
               } finally {
-                if (pendingAudioUrl) URL.revokeObjectURL(pendingAudioUrl);
-                setPendingAudioUrl(null);
+                if (pendingAudioUrl) {
+                  URL.revokeObjectURL(pendingAudioUrl);
+                  setPendingAudioUrl(null);
+                }
               }
-            }}
-          >
-            Tap to play
-          </button>
-        )}
+            }
+          }}
+          disabled={busy || (!pendingAudioUrl && !lastTutorAudioUrl)}
+          variant="apple" 
+          size={compact ? "sm" : "md"}
+          className={compact ? "h-6 px-2 text-xs" : "h-7 px-3 text-xs"}
+        >
+          Tap to Play
+        </Button>
+
+        <Button 
+          onClick={() => setShowTypeBox((v) => !v)} 
+          disabled={busy} 
+          variant="apple" 
+          size={compact ? "sm" : "md"}
+          className={compact ? "h-6 px-2 text-xs" : "h-7 px-3 text-xs"}
+        >
+          Type
+        </Button>
         
         {busy && <div className={compact ? "text-xs opacity-70" : "text-sm opacity-70"}>Processing…</div>}
       </div>
