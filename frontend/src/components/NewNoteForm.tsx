@@ -37,7 +37,9 @@ export default function NewNoteForm() {
         value={body}
         onChange={(e) => setBody(e.target.value)}
       />
-      <Button type="submit" variant="lofi">Add Note</Button>
+      <Button type="submit" variant="lofi" responsive>
+        Add Note
+      </Button>
     </form>
   );
 }

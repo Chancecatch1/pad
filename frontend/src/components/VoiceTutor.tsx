@@ -152,9 +152,8 @@ export default function VoiceTutor({ sessionId: extSessionId = null, onSession, 
         <Button 
           onClick={recording ? stopRec : startRec} 
           disabled={busy} 
-          variant="lofi" 
-          size={compact ? "sm" : "md"}
-          className={compact ? "h-6 px-2 text-xs" : "h-7 px-3 text-xs"}
+          variant="lofi"
+          responsive
         >
           {recording ? "Stop" : "record"}
         </Button>
@@ -175,9 +174,8 @@ export default function VoiceTutor({ sessionId: extSessionId = null, onSession, 
             }
           }}
           disabled={busy || (!pendingAudioUrl && !lastTutorAudioUrl)}
-          variant="lofi" 
-          size={compact ? "sm" : "md"}
-          className={compact ? "h-6 px-2 text-xs" : "h-7 px-3 text-xs"}
+          variant="lofi"
+          responsive
         >
           play
         </Button>
@@ -185,9 +183,8 @@ export default function VoiceTutor({ sessionId: extSessionId = null, onSession, 
         <Button 
           onClick={() => setShowTypeBox((v) => !v)} 
           disabled={busy} 
-          variant="lofi" 
-          size={compact ? "sm" : "md"}
-          className={compact ? "h-6 px-2 text-xs" : "h-7 px-3 text-xs"}
+          variant="lofi"
+          responsive
         >
           type
         </Button>
@@ -212,7 +209,7 @@ export default function VoiceTutor({ sessionId: extSessionId = null, onSession, 
             value={manualText}
             onChange={(e) => setManualText(e.target.value)}
           />
-          <Button disabled={busy || !manualText.trim()} type="submit" variant="lofi" size={compact ? "sm" : "md"}>Send</Button>
+          <Button disabled={busy || !manualText.trim()} type="submit" variant="lofi" responsive>Send</Button>
         </form>
       )}
 

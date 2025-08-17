@@ -7,6 +7,7 @@ type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: "primary" | "secondary" | "outline" | "ghost" | "custom" | "apple" | "lofi";
   size?: "sm" | "md" | "lg";
   fullWidth?: boolean;
+  responsive?: boolean;
 };
 
 export default function Button({
@@ -14,6 +15,7 @@ export default function Button({
   variant = "primary",
   size = "md",
   fullWidth = false,
+  responsive = false,
   ...props
 }: ButtonProps) {
   const base = "inline-flex items-center justify-center rounded-md font-medium transition-colors disabled:opacity-50 disabled:pointer-events-none focus:outline-none focus:ring-2 focus:ring-offset-2";
@@ -33,11 +35,12 @@ export default function Button({
     md: "h-11 px-5 text-sm",
     lg: "h-12 px-6 text-base",
   };
+  const responsiveSize = "h-8 px-3 text-xs sm:h-9 sm:px-4 sm:text-sm md:h-11 md:px-5 md:text-sm lg:h-12 lg:px-6 lg:text-base";
 
   return (
     <button
       {...props}
-      className={clsx(base, variants[variant], sizes[size], fullWidth && "w-full", className)}
+      className={clsx(base, variants[variant], responsive ? responsiveSize : sizes[size], fullWidth && "w-full", className)}
     />
   );
 }
