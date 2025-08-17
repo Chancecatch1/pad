@@ -1,5 +1,6 @@
 import { headers } from "next/headers";
-import BackButton from "@/components/BackButton";
+import Card from "@/components/Card";
+import NavBar from "@/components/NavBar";
 
 export default async function HealthPage() {
   const h = await headers();
@@ -12,13 +13,13 @@ export default async function HealthPage() {
 
   return (
     <div className="min-h-screen p-6">
-      <main className="max-w-xl mx-auto space-y-6">
-        <div className="flex items-center gap-3">
-          <BackButton />
-        </div>
-        <pre className="bg-black/5 dark:bg-white/10 p-3 rounded">
-          {JSON.stringify(data, null, 2)}
-        </pre>
+      <NavBar title="Backend Status" />
+      <main className="max-w-xl mx-auto space-y-6 mt-20 w-full px-4 items-center justify-items-center">
+        <Card className="p-4 w-full">
+          <pre className="bg-black/5 dark:bg-white/10 p-3 rounded">
+            {JSON.stringify(data, null, 2)}
+          </pre>
+        </Card>
       </main>
     </div>
   );

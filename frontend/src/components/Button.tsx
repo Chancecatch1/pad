@@ -4,7 +4,7 @@ import type React from "react";
 import clsx from "clsx";
 
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
-  variant?: "primary" | "secondary" | "outline" | "ghost" | "custom" | "apple";
+  variant?: "primary" | "secondary" | "outline" | "ghost" | "custom" | "apple" | "lofi";
   size?: "sm" | "md" | "lg";
   fullWidth?: boolean;
 };
@@ -25,6 +25,8 @@ export default function Button({
     custom: "",
     apple:
       "bg-white text-[#1d1d1f] border border-black/10 rounded-full shadow-sm hover:shadow-md hover:bg-black/5 focus:ring-black/20 dark:bg-white/10 dark:text-white dark:border-white/20 dark:hover:bg-white/15",
+    lofi:
+      "bg-[#C5CED8] text-[#262E3A] border-2 border-[#C5CED8] rounded-md hover:brightness-95 focus:ring-[#C5CED8]",
   };
   const sizes: Record<string, string> = {
     sm: "h-9 px-4 text-sm",

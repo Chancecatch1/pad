@@ -152,11 +152,11 @@ export default function VoiceTutor({ sessionId: extSessionId = null, onSession, 
         <Button 
           onClick={recording ? stopRec : startRec} 
           disabled={busy} 
-          variant="apple" 
+          variant="lofi" 
           size={compact ? "sm" : "md"}
           className={compact ? "h-6 px-2 text-xs" : "h-7 px-3 text-xs"}
         >
-          {recording ? "Stop" : "Sending Voice"}
+          {recording ? "Stop" : "record"}
         </Button>
         
         <Button 
@@ -175,21 +175,21 @@ export default function VoiceTutor({ sessionId: extSessionId = null, onSession, 
             }
           }}
           disabled={busy || (!pendingAudioUrl && !lastTutorAudioUrl)}
-          variant="apple" 
+          variant="lofi" 
           size={compact ? "sm" : "md"}
           className={compact ? "h-6 px-2 text-xs" : "h-7 px-3 text-xs"}
         >
-          Tap to Play
+          play
         </Button>
 
         <Button 
           onClick={() => setShowTypeBox((v) => !v)} 
           disabled={busy} 
-          variant="apple" 
+          variant="lofi" 
           size={compact ? "sm" : "md"}
           className={compact ? "h-6 px-2 text-xs" : "h-7 px-3 text-xs"}
         >
-          Type
+          type
         </Button>
         
         {busy && <div className={compact ? "text-xs opacity-70" : "text-sm opacity-70"}>Processing…</div>}
@@ -212,7 +212,7 @@ export default function VoiceTutor({ sessionId: extSessionId = null, onSession, 
             value={manualText}
             onChange={(e) => setManualText(e.target.value)}
           />
-          <Button disabled={busy || !manualText.trim()} type="submit" variant="apple" size={compact ? "sm" : "md"}>Send</Button>
+          <Button disabled={busy || !manualText.trim()} type="submit" variant="lofi" size={compact ? "sm" : "md"}>Send</Button>
         </form>
       )}
 
@@ -224,7 +224,7 @@ export default function VoiceTutor({ sessionId: extSessionId = null, onSession, 
                 {m.role === "user" ? "You" : "Tutor"}: {m.text}
               </div>
               {m.correction && (
-                <div className="opacity-70">Correction: {m.correction}</div>
+                <div className="opacity-70">{m.correction}</div>
               )}
             </div>
           ))}

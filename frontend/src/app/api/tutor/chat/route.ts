@@ -20,7 +20,7 @@ export async function POST(req: Request) {
 
     const parts: string[] = [
       "You are an English speaking tutor and conversation partner.",
-      "Keep replies short (1–3 sentences), conversational, and always in English.",
+      "Keep replies short (1-3 sentences), conversational, and always in English.",
       "Always end with a brief question to keep the conversation going.",
       "Provide a natural correction of the learner's last utterance.",
       'Return only JSON with keys \"reply\" and \"correction\".',
@@ -28,10 +28,25 @@ export async function POST(req: Request) {
     if (persona) parts.push(`Persona: ${persona}. Stay in character.`);
     if (scenario) parts.push(`Scenario: ${scenario}. Keep the conversation aligned with it.`);
     if (level) parts.push(`Learner level: ${level}. Adjust vocabulary and complexity accordingly.`);
-    if (targetPhrases.length) parts.push(`Encourage using: ${targetPhrases.join(", ")}.`);
+
+    // Normalize and bound target phrases for prompt hygiene
+    const normalizedPhrases = (Array.isArray(targetPhrases) ? targetPhrases : [])
+      .map((s) => (typeof s === "string" ? s.trim() : ""))
+      .filter(Boolean)
+      .slice(0, 12);
+    if (normalizedPhrases.length) parts.push(`Encourage using: ${normalizedPhrases.join(", ")}.`);
+
+    // Normalize and truncate materials (accept string or string[])
     if (materials) {
-      const mat = Array.isArray(materials) ? materials.join("\\n\\n") : materials;
-      parts.push(`Reference materials (use when relevant):\\n${mat}`);
+      const MAX_MATERIAL_CHARS = 2000; // adjust as needed
+      const mats = Array.isArray(materials) ? materials : [materials];
+      const cleaned = mats
+        .map((s) => (typeof s === "string" ? s.trim() : ""))
+        .filter(Boolean)
+        .slice(0, 10); // cap sections
+      let joined = cleaned.join("\\n\\n");
+      if (joined.length > MAX_MATERIAL_CHARS) joined = joined.slice(0, MAX_MATERIAL_CHARS) + "…";
+      if (joined) parts.push(`Reference materials (use when relevant):\\n${joined}`);
     }
 
     const messages: { role: "system" | "user" | "assistant"; content: string }[] = [
