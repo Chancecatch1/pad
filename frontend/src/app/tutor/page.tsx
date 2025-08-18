@@ -34,8 +34,6 @@ export default function TutorPage() {
   const [selectedPersona, setSelectedPersona] = useState<string>("");
   const [selectedScenario, setSelectedScenario] = useState<string>("");
 
-  // removed multi-select toggle; single-select uses direct setters
-
   return (
     <div className="min-h-screen p-6">
       <NavBar title="Tutor" />
@@ -80,7 +78,7 @@ export default function TutorPage() {
               <div className="space-y-1 md:col-span-2">
                 <label className="text-sm font-medium">Materials</label>
                 <textarea className="w-full border-2 border-[#C5CED8] rounded-md p-2 text-xs"
-                  placeholder="Relevant situation, meeting document, presentation materials and the expressions you want to use (only text materials that help with contextual understanding)"
+                  placeholder="Briefly describe the situation/topic, paste any relevant text, and list expressions you want to practice. Use blank lines to separate sections."
                   rows={5}
                   value={materials}
                   onChange={e => setMaterials(e.target.value)} />
@@ -89,7 +87,7 @@ export default function TutorPage() {
                 <label className="text-sm font-medium">Target phrases (comma-separated)</label>
                 <input
                   className="w-full border-2 border-[#C5CED8] rounded-md p-2 text-xs"
-                  placeholder="e.g., trade-off, turn-taking, politely disagree, I'd like"
+                  placeholder="Comma‑separated, e.g., trade-off, turn-taking, politely disagree, I'd like to."
                   onChange={(e) => setTargetPhrases(
                     e.target.value
                       .split(",")

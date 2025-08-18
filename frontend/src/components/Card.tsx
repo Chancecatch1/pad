@@ -10,8 +10,7 @@ export default function Card({ children, className }: CardProps) {
     <div
       className={clsx(
         // Basic Lo-fi style: clean white card with subtle gray border and 8px radius
-        "rounded-lg bg-white border-2",
-        "border-[#C5CED8]",
+        "rounded-lg bg-white border-2 break-words border-[#C5CED8]",
         className
       )}
     >

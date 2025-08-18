@@ -35,7 +35,7 @@ export default function Button({
     md: "h-11 px-5 text-sm",
     lg: "h-12 px-6 text-base",
   };
-  const responsiveSize = "h-8 px-3 text-xs sm:h-9 sm:px-4 sm:text-sm md:h-11 md:px-5 md:text-sm lg:h-12 lg:px-6 lg:text-base";
+  const responsiveSize = "h-8 px-3 text-xs sm:h-8 sm:px-3 sm:text-sm md:h-9 md:px-4 md:text-sm lg:h-10 lg:px-5 lg:text-sm";
 
   return (
     <button

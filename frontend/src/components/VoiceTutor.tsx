@@ -167,7 +167,6 @@ export default function VoiceTutor({ sessionId: extSessionId = null, onSession, 
                 await a.play();
               } finally {
                 if (pendingAudioUrl) {
-                  URL.revokeObjectURL(pendingAudioUrl);
                   setPendingAudioUrl(null);
                 }
               }
