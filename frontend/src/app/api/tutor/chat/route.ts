@@ -11,12 +11,13 @@ type ClientBody = {
   scenario?: string;
   materials?: string | string[];
   level?: string;
+  learner?: string;
   targetPhrases?: string[];
 };
 
 export async function POST(req: Request) {
   try {
-    const { message, history = [], persona, scenario, materials, level, targetPhrases = [] } = (await req.json()) as ClientBody;
+    const { message, history = [], persona, scenario, materials, level, targetPhrases = [], learner } = (await req.json()) as ClientBody;
 
     const parts: string[] = [
       "You are an English speaking tutor and conversation partner.",
@@ -26,6 +27,7 @@ export async function POST(req: Request) {
       'Return only JSON with keys \"reply\" and \"correction\".',
     ];
     if (persona) parts.push(`Persona: ${persona}. Stay in character.`);
+    if (learner) parts.push(`Learner persona: ${learner}. Address the learner accordigly and tailor your responses to that role.`);
     if (scenario) parts.push(`Scenario: ${scenario}. Keep the conversation aligned with it.`);
     if (level) parts.push(`Learner level: ${level}. Adjust vocabulary and complexity accordingly.`);
 

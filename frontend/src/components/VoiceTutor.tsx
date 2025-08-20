@@ -16,6 +16,7 @@ type Props = {
     scenario?: string;
     materials?: string | string[];
     level?: string;
+    learner?: string;
     targetPhrases?: string[];
   };
 };

@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from "react";
 import VoiceTutor from "@/components/VoiceTutor";
 import NavBar from "@/components/NavBar";
@@ -18,6 +17,12 @@ export default function TutorPage() {
   const levelOptions = ["A2", "B1", "B2", "C1"];
   const personaOptions = [
     "Ordinary Person",
+    "Interviewer",
+    "Superviser",
+    "Audience",
+  ];
+  const learnerOptions = [
+    "Random Person",
     "Interviewee",
     "Master Student",
     "Presenter",
@@ -33,6 +38,7 @@ export default function TutorPage() {
   const [selectedLevel, setSelectedLevel] = useState<string>("B2");
   const [selectedPersona, setSelectedPersona] = useState<string>("");
   const [selectedScenario, setSelectedScenario] = useState<string>("");
+  const [selectedLearner, setSelectedLearner] = useState<string>("");
 
   return (
     <div className="min-h-screen p-6">
@@ -58,11 +64,20 @@ export default function TutorPage() {
                 </div>
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium">Persona</label>
+                <label className="text-sm font-medium">Tutor Persona</label>
                 <div className="grid grid-cols-2 gap-2">
                   {personaOptions.map(ps => (
                     <button key={ps} type="button" onClick={() => setSelectedPersona(ps)}
                       className={`px-3 py-2 rounded-md border-2 text-xs ${selectedPersona === ps ? "bg-[#C5CED8] border-[#C5CED8] text-[#262E3A]" : "bg-white border-[#C5CED8] text-[#4E5C6A]"}`}>{ps}</button>
+                  ))}
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Learner Persona</label>
+                <div className="grid grid-cols-2 gap-2">
+                  {learnerOptions.map(ps => (
+                    <button key={ps} type="button" onClick={() => setSelectedLearner(ps)}
+                      className={`px-3 py-2 rounded-md border-2 text-xs ${selectedLearner === ps ? "bg-[#C5CED8] border-[#C5CED8] text-[#262E3A]" : "bg-white border-[#C5CED8] text-[#4E5C6A]"}`}>{ps}</button>
                   ))}
                 </div>
               </div>
@@ -132,6 +147,7 @@ export default function TutorPage() {
                 .map((s) => s.trim())
                 .filter(Boolean),
               persona: selectedPersona,
+              learner: selectedLearner,
               scenario: selectedScenario,
               targetPhrases,
             }}
