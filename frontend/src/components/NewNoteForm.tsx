@@ -23,23 +23,27 @@ export default function NewNoteForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="w-full max-w-xl space-y-2">
+    <form onSubmit={onSubmit} className="space-y-3">
       <input
-        className="w-full border p-2 rounded"
+        className="w-full px-4 py-2 rounded-xl border border-gray-200 text-base focus:outline-none focus:border-gray-300"
         placeholder="Title"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         required
       />
       <textarea
-        className="w-full border p-2 rounded"
+        className="w-full px-4 py-2 rounded-xl border border-gray-200 text-base focus:outline-none focus:border-gray-300"
         placeholder="Body"
+        rows={3}
         value={body}
         onChange={(e) => setBody(e.target.value)}
       />
-      <Button type="submit" variant="lofi" responsive>
+      <button
+        type="submit"
+        className="px-4 py-2 rounded-xl border border-gray-200 text-base text-gray-700 hover:border-gray-300 transition-colors"
+      >
         Add Note
-      </Button>
+      </button>
     </form>
   );
 }

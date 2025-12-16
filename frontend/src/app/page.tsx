@@ -1,28 +1,64 @@
-import Link from "next/link";
+/* CHANGE NOTE
+Why: Update homepage with i18n translations (English default)
+What changed: Made page a client component, using translations from context
+Behaviour/Assumptions: Text switches based on language context
+Rollback: Revert to previous version
+— mj
+*/
 
-export default function Page() {
+"use client";
+
+import Link from 'next/link';
+import { getAllMembers } from '@/data/members';
+import { getFeaturedProjects } from '@/data/projects';
+import ProjectCard from '@/components/sections/ProjectCard';
+import MemberCard from '@/components/sections/MemberCard';
+import { useLanguage } from '@/context/LanguageContext';
+
+export default function HomePage() {
+  const members = getAllMembers();
+  const featuredProjects = getFeaturedProjects();
+  const { t } = useLanguage();
+
   return (
-    <div className="min-h-svh px-6 pt-40 sm:pt-40 md:pt-60 lg:pt-65 xl:pt-70 flex items-start justify-center">
-      {/* Spacing between the title and the menu below. To make them closer/farther, adjust this gap value. */}
-      <main className="flex flex-col items-center gap-2">
-        {/* Title: Pine at Dawn (opacity 50%) */}
-        <h1 className="font-medium text-[48px] md:text-[80px] leading-tight text-black/60">Pine at Dawn</h1>
+    <div className="min-h-screen">
+      {/* Projects - First */}
+      {featuredProjects.length > 0 && (
+        <section className="px-6 pt-24 pb-16">
+          <div className="max-w-5xl mx-auto">
+            <h2 className="text-base font-bold text-gray-900 mb-6">
+              {t.projects}
+            </h2>
+            <div className="max-w-2xl space-y-4">
+              {featuredProjects.map((project) => (
+                <ProjectCard key={project.slug} project={project} />
+              ))}
+            </div>
+            <div className="mt-8">
+              <Link
+                href="/projects"
+                className="text-gray-600 hover:text-gray-900 transition-colors"
+              >
+                {t.viewAllProjects}
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
 
-        <div className="flex flex-wrap items-center justify-center gap-4">
-          <Link href="/tutor"
-          className="inline-flex items-center justify-center gap-2 rounded-md bg-[#C5CED8] text-[#262E3A] hover:brightness-95 transition-colors focus:outline-none focus:ring-2 focus:ring-[#C5CED8] focus:ring-offset-2 h-6.5 px-2 text-xs sm:h-6.5 sm:px-2 sm:text-xs md:h-8 md:px-2.5 md:text-sm lg:h-8 lg:px-3 lg:text-sm">
-            English Tutor
-          </Link>
-          <Link href="/notes"
-          className="inline-flex items-center justify-center gap-2 rounded-md bg-[#C5CED8] text-[#262E3A] hover:brightness-95 transition-colors focus:outline-none focus:ring-2 focus:ring-[#C5CED8] focus:ring-offset-2 h-6.5 px-2 text-xs sm:h-6.5 sm:px-2 sm:text-xs md:h-8 md:px-2.5 md:text-sm lg:h-8 lg:px-3 lg:text-sm">
-            Some Notes
-          </Link>
-          <Link href="/health"
-          className="inline-flex items-center justify-center gap-2 rounded-md bg-[#C5CED8] text-[#262E3A] hover:brightness-95 transition-colors focus:outline-none focus:ring-2 focus:ring-[#C5CED8] focus:ring-offset-2 h-6.5 px-2 text-xs sm:h-6.5 sm:px-2 sm:text-xs md:h-8 md:px-2.5 md:text-sm lg:h-8 lg:px-3 lg:text-sm">
-            Backend Status
-          </Link>
+      {/* Team Members */}
+      <section className="px-6 py-16">
+        <div className="max-w-5xl mx-auto">
+          <h2 className="text-base font-bold text-gray-900 mb-6">
+            {t.meetTheTeam}
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl">
+            {members.map((member) => (
+              <MemberCard key={member.id} member={member} />
+            ))}
+          </div>
         </div>
-      </main>
+      </section>
     </div>
   );
 }

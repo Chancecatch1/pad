@@ -9,8 +9,7 @@ export default function Card({ children, className }: CardProps) {
   return (
     <div
       className={clsx(
-        // Basic Lo-fi style: clean white card with subtle gray border and 8px radius
-        "rounded-lg bg-white border-2 break-words border-[#C5CED8]",
+        "rounded-xl border border-gray-200 bg-white",
         className
       )}
     >

@@ -29,3 +29,8 @@ pnpm-debug.log*
 
 # External tools
 cursor-talk-to-figma-mcp
+.env*.local
+
+# Personal
+.prompt
+github-repos
