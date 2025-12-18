@@ -84,15 +84,15 @@ export default function MJPage() {
                     <div className="space-y-3 text-sm">
                         <div>
                             <div className="font-medium text-gray-900">University of Calgary</div>
-                            <div className="text-gray-600">MSc, Electrical and Software Engineering (HXI Lab) · 2025 - present</div>
-                        </div>
-                        <div>
-                            <div className="font-medium text-gray-900">Korea National Open University</div>
-                            <div className="text-gray-600">BSc, Computer Science · 2024 - present</div>
+                            <div className="text-gray-600">MSc, Electrical and Software Engineering (HXI Lab) · 2024 - present</div>
                         </div>
                         <div>
                             <div className="font-medium text-gray-900">Soongsil University</div>
                             <div className="text-gray-600">BSc, Chemical Engineering · 2007 - 2014</div>
+                        </div>
+                        <div>
+                            <div className="font-medium text-gray-900">Korea National Open University</div>
+                            <div className="text-gray-600">BSc, Computer Science · 2024 - present</div>
                         </div>
                     </div>
                 </section>
@@ -102,20 +102,16 @@ export default function MJPage() {
                     <h2 className="text-xl font-bold text-gray-900 mb-4">Experience</h2>
                     <div className="space-y-3 text-sm">
                         <div>
-                            <div className="font-medium text-gray-900">HXI Lab · Researcher</div>
-                            <div className="text-gray-600">AR application development for CPR training · Aug 2025 - present</div>
+                            <div className="font-medium text-gray-900">University of Calgary · Graduate Research Assistant</div>
+                            <div className="text-gray-600">AI-assisted AR for collaborative medical training · Sep 2024 - present</div>
                         </div>
                         <div>
-                            <div className="font-medium text-gray-900">Books so Inc. · ML Engineer</div>
-                            <div className="text-gray-600">RAG, sLLM, Voice Shifter, Heart Sound Classification · Dec 2023 - Sep 2024</div>
-                        </div>
-                        <div>
-                            <div className="font-medium text-gray-900">Outlier · AI Trainer</div>
-                            <div className="text-gray-600">AI prompt evaluation and annotation · Apr 2024 - Sep 2024</div>
+                            <div className="font-medium text-gray-900">Books so Inc. · Machine Learning Engineer</div>
+                            <div className="text-gray-600">Audio ML models, RAG, sLLM development · Dec 2023 - Sep 2024</div>
                         </div>
                         <div>
                             <div className="font-medium text-gray-900">Seoul Foundation for Arts & Culture · Project Manager</div>
-                            <div className="text-gray-600">100+ arts and culture events coordination · Feb 2020 - Aug 2023</div>
+                            <div className="text-gray-600">100+ arts and culture events, database systems · Feb 2020 - Aug 2023</div>
                         </div>
                     </div>
                 </section>
@@ -124,7 +120,7 @@ export default function MJPage() {
                 <section className="mb-10 max-w-2xl">
                     <h2 className="text-xl font-bold text-gray-900 mb-4">Skills</h2>
                     <div className="flex flex-wrap gap-2">
-                        {['Python', 'TypeScript', 'Next.js', 'Svelte', 'Machine Learning', 'Computer Vision', 'LLM', 'Docker', 'Git'].map((skill) => (
+                        {['Python', 'TypeScript', 'Unity', 'Next.js', 'Machine Learning', 'AR/VR', 'LLM', 'HCI', 'Docker', 'Git'].map((skill) => (
                             <span key={skill} className="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-full">
                                 {skill}
                             </span>

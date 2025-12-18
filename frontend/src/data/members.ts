@@ -12,8 +12,8 @@ export const members: Record<string, Member> = {
     mj: {
         id: 'mj',
         name: 'Mj',
-        role: 'HXI Researcher & ML Engineer',
-        bio: "Master's student at the University of Calgary, HXI (Human-X Interaction) Researcher. Expertise in AI model development and web deployment, with 5+ years in arts and culture.",
+        role: 'HXI Research Assistant (Human-X Interaction)',
+        bio: "Hey there! I'm a machine learning engineer, currently pursuing my MSc at the University of Calgary focusing on AI-assisted AR for healthcare. My research spans international collaboration in healthcare and HCI. Before this, I worked as a project manager in the arts field.",
         avatar: '/members/mj-avatar.png',
         socials: {
             github: 'https://github.com/chancecatch1',
