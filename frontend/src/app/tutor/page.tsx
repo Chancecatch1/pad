@@ -1,8 +1,14 @@
+/* CHANGE NOTE
+Why: TeamVoid minimal style - clean tutor with proper spacing (gap 17px)
+What changed: Adjusted button gap, removed boxes
+Behaviour/Assumptions: Buttons close together as per Figma
+Rollback: Revert to previous version
+— mj
+*/
+
 "use client";
 import { useState } from "react";
 import VoiceTutor from "@/components/VoiceTutor";
-import NavBar from "@/components/NavBar";
-import Card from "@/components/Card";
 
 type Msg = { role: "user" | "assistant"; text: string; correction?: string };
 
@@ -13,148 +19,143 @@ export default function TutorPage() {
   const [targetPhrases, setTargetPhrases] = useState<string[]>([]);
   const [optionsOpen, setOptionsOpen] = useState(false);
 
-  // Options inspired by Basic Lo-fi Kit layout (customizable)
   const levelOptions = ["A2", "B1", "B2", "C1"];
-  const personaOptions = [
-    "Ordinary Person",
-    "Interviewer",
-    "Superviser",
-    "Audience",
-  ];
-  const learnerOptions = [
-    "Random Person",
-    "Interviewee",
-    "Master Student",
-    "Presenter",
-  ];
-  const scenarioOptions = [
-    "General Conversation",
-    "Job Interview",
-    "Lab Meeting",
-    "Presentation",
-  ];
+  const personaOptions = ["Ordinary Person", "Interviewer", "Superviser", "Audience"];
+  const learnerOptions = ["Random Person", "Interviewee", "Master Student", "Presenter"];
+  const scenarioOptions = ["General Conversation", "Job Interview", "Lab Meeting", "Presentation"];
 
-  // Single-select states
   const [selectedLevel, setSelectedLevel] = useState<string>("B2");
   const [selectedPersona, setSelectedPersona] = useState<string>("");
   const [selectedScenario, setSelectedScenario] = useState<string>("");
   const [selectedLearner, setSelectedLearner] = useState<string>("");
 
   return (
-    <div className="min-h-screen px-6 pt-24 pb-16">
-      <div className="max-w-5xl mx-auto">
-        <h1 className="text-base font-bold text-gray-900 mb-6">Tutor</h1>
+    <div className="py-8">
+      <h1 className="font-bold mb-4">Tutor</h1>
 
-        <div className="max-w-2xl space-y-4">
-          {/* Role-play options (collapsed by default) */}
-          <div className="p-4 rounded-xl border border-gray-200 bg-white">
-            <div className="flex items-center justify-between">
-              <div className="text-base font-bold text-gray-900">Role-play options</div>
-              <button type="button" className="text-base text-gray-500 underline" onClick={() => setOptionsOpen(v => !v)}>
-                {optionsOpen ? "Hide" : "Show"}
-              </button>
-            </div>
-            {optionsOpen && (
-              <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-base font-bold text-gray-900">Level</label>
-                  <div className="flex flex-wrap gap-2">
-                    {levelOptions.map(lv => (
-                      <button key={lv} type="button" onClick={() => setSelectedLevel(lv)}
-                        className={`px-3 py-1 rounded-xl border text-base transition-colors ${selectedLevel === lv ? "border-gray-400 bg-gray-100" : "border-gray-200 hover:border-gray-300"}`}>{lv}</button>
-                    ))}
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-base font-bold text-gray-900">Tutor Persona</label>
-                  <div className="flex flex-wrap gap-2">
-                    {personaOptions.map(ps => (
-                      <button key={ps} type="button" onClick={() => setSelectedPersona(ps)}
-                        className={`px-3 py-1 rounded-xl border text-base transition-colors ${selectedPersona === ps ? "border-gray-400 bg-gray-100" : "border-gray-200 hover:border-gray-300"}`}>{ps}</button>
-                    ))}
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-base font-bold text-gray-900">Learner Persona</label>
-                  <div className="flex flex-wrap gap-2">
-                    {learnerOptions.map(ps => (
-                      <button key={ps} type="button" onClick={() => setSelectedLearner(ps)}
-                        className={`px-3 py-1 rounded-xl border text-base transition-colors ${selectedLearner === ps ? "border-gray-400 bg-gray-100" : "border-gray-200 hover:border-gray-300"}`}>{ps}</button>
-                    ))}
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-base font-bold text-gray-900">Scenario</label>
-                  <div className="flex flex-wrap gap-2">
-                    {scenarioOptions.map(sc => (
-                      <button key={sc} type="button" onClick={() => setSelectedScenario(sc)}
-                        className={`px-3 py-1 rounded-xl border text-base transition-colors ${selectedScenario === sc ? "border-gray-400 bg-gray-100" : "border-gray-200 hover:border-gray-300"}`}>{sc}</button>
-                    ))}
-                  </div>
-                </div>
-                <div className="space-y-2 md:col-span-2">
-                  <label className="text-base font-bold text-gray-900">Materials</label>
-                  <textarea className="w-full px-4 py-2 rounded-xl border border-gray-200 text-base focus:outline-none focus:border-gray-300"
-                    placeholder="Briefly describe the situation/topic..."
-                    rows={4}
-                    value={materials}
-                    onChange={e => setMaterials(e.target.value)} />
-                </div>
-                <div className="space-y-2 md:col-span-2">
-                  <label className="text-base font-bold text-gray-900">Target phrases</label>
-                  <input
-                    className="w-full px-4 py-2 rounded-xl border border-gray-200 text-base focus:outline-none focus:border-gray-300"
-                    placeholder="Comma-separated, e.g., trade-off, turn-taking"
-                    onChange={(e) => setTargetPhrases(
-                      e.target.value
-                        .split(",")
-                        .map((s) => s.trim())
-                        .filter(Boolean)
-                    )}
-                  />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '17px' }}>
+        {/* Role-play options */}
+        <section>
+          <div className="flex items-center gap-4 mb-2">
+            <span className="font-bold">Role-play options</span>
+            <button onClick={() => setOptionsOpen(v => !v)} className="hover:opacity-60">
+              {optionsOpen ? "Hide" : "Show"}
+            </button>
+          </div>
+
+          {optionsOpen && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '17px' }}>
+              <div>
+                <div className="font-medium mb-1">Level</div>
+                <div className="flex gap-3">
+                  {levelOptions.map(lv => (
+                    <button
+                      key={lv}
+                      onClick={() => setSelectedLevel(lv)}
+                      className={`hover:opacity-60 ${selectedLevel === lv ? 'font-bold' : ''}`}
+                    >
+                      {lv}
+                    </button>
+                  ))}
                 </div>
               </div>
-            )}
-          </div>
-
-          {/* Chat area */}
-          <div className="p-4 rounded-xl border border-gray-200 bg-white space-y-3">
-            <section className="space-y-3">
-              {messages.map((m, i) => (
-                <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
-                  <div className={`max-w-[80%] px-4 py-2 rounded-xl border text-base ${m.role === "user"
-                      ? "border-gray-300 bg-gray-100"
-                      : "border-gray-200 bg-white"}`}>
-                    <div>{m.text}</div>
-                    {m.correction && m.role === "assistant" && (
-                      <div className="mt-1 text-base text-gray-500">{m.correction}</div>
-                    )}
-                  </div>
+              <div>
+                <div className="font-medium mb-1">Tutor Persona</div>
+                <div className="flex flex-wrap gap-3">
+                  {personaOptions.map(ps => (
+                    <button
+                      key={ps}
+                      onClick={() => setSelectedPersona(ps)}
+                      className={`hover:opacity-60 ${selectedPersona === ps ? 'font-bold' : ''}`}
+                    >
+                      {ps}
+                    </button>
+                  ))}
                 </div>
-              ))}
-            </section>
+              </div>
+              <div>
+                <div className="font-medium mb-1">Learner Persona</div>
+                <div className="flex flex-wrap gap-3">
+                  {learnerOptions.map(ps => (
+                    <button
+                      key={ps}
+                      onClick={() => setSelectedLearner(ps)}
+                      className={`hover:opacity-60 ${selectedLearner === ps ? 'font-bold' : ''}`}
+                    >
+                      {ps}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <div className="font-medium mb-1">Scenario</div>
+                <div className="flex flex-wrap gap-3">
+                  {scenarioOptions.map(sc => (
+                    <button
+                      key={sc}
+                      onClick={() => setSelectedScenario(sc)}
+                      className={`hover:opacity-60 ${selectedScenario === sc ? 'font-bold' : ''}`}
+                    >
+                      {sc}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <div className="font-medium mb-1">Materials</div>
+                <textarea
+                  className="w-full bg-transparent focus:outline-none"
+                  placeholder="Briefly describe the situation/topic..."
+                  rows={3}
+                  value={materials}
+                  onChange={e => setMaterials(e.target.value)}
+                />
+              </div>
+              <div>
+                <div className="font-medium mb-1">Target phrases</div>
+                <input
+                  className="w-full bg-transparent focus:outline-none"
+                  placeholder="Comma-separated, e.g., trade-off, turn-taking"
+                  onChange={(e) => setTargetPhrases(
+                    e.target.value.split(",").map((s) => s.trim()).filter(Boolean)
+                  )}
+                />
+              </div>
+            </div>
+          )}
+        </section>
 
-            <VoiceTutor
-              sessionId={sessionId}
-              onSession={(id) => setSessionId(id)}
-              history={messages}
-              onMessage={(msg) => setMessages((m) => [...m, msg])}
-              hideMessages
-              compact
-              roleConfig={{
-                level: selectedLevel,
-                materials: materials
-                  .split(/\n\n+/)
-                  .map((s) => s.trim())
-                  .filter(Boolean),
-                persona: selectedPersona,
-                learner: selectedLearner,
-                scenario: selectedScenario,
-                targetPhrases,
-              }}
-            />
-          </div>
-        </div>
+        {/* Chat area */}
+        <section style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          {messages.map((m, i) => (
+            <div key={i} className={m.role === "user" ? "text-right" : ""}>
+              <span className="text-gray-400 text-xs mr-2">
+                {m.role === "user" ? "You" : "Tutor"}
+              </span>
+              <span>{m.text}</span>
+              {m.correction && m.role === "assistant" && (
+                <div className="text-gray-500 text-sm mt-1">{m.correction}</div>
+              )}
+            </div>
+          ))}
+        </section>
+
+        <VoiceTutor
+          sessionId={sessionId}
+          onSession={(id) => setSessionId(id)}
+          history={messages}
+          onMessage={(msg) => setMessages((m) => [...m, msg])}
+          hideMessages
+          compact
+          roleConfig={{
+            level: selectedLevel,
+            materials: materials.split(/\n\n+/).map((s) => s.trim()).filter(Boolean),
+            persona: selectedPersona,
+            learner: selectedLearner,
+            scenario: selectedScenario,
+            targetPhrases,
+          }}
+        />
       </div>
     </div>
   );

@@ -1,8 +1,15 @@
+/* CHANGE NOTE
+Why: TeamVoid minimal style - no boxes on form
+What changed: Removed rounded/border styling, clean text inputs
+Behaviour/Assumptions: Simple form without decorative boxes
+Rollback: Revert to previous version
+— mj
+*/
+
 "use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Button from "@/components/Button";
 
 export default function NewNoteForm() {
   const [title, setTitle] = useState("");
@@ -23,26 +30,26 @@ export default function NewNoteForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-3">
+    <form onSubmit={onSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
       <input
-        className="w-full px-4 py-2 rounded-xl border border-gray-200 text-base focus:outline-none focus:border-gray-300"
+        className="bg-transparent focus:outline-none"
         placeholder="Title"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         required
       />
       <textarea
-        className="w-full px-4 py-2 rounded-xl border border-gray-200 text-base focus:outline-none focus:border-gray-300"
+        className="bg-transparent focus:outline-none"
         placeholder="Body"
-        rows={3}
+        rows={2}
         value={body}
         onChange={(e) => setBody(e.target.value)}
       />
       <button
         type="submit"
-        className="px-4 py-2 rounded-xl border border-gray-200 text-base text-gray-700 hover:border-gray-300 transition-colors"
+        className="self-start hover:opacity-60"
       >
-        Add Note
+        Add Note →
       </button>
     </form>
   );

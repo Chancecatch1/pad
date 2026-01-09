@@ -1,16 +1,15 @@
 /* CHANGE NOTE
-Why: Add i18n support with LanguageProvider
-What changed: Added LanguageProvider, changed lang to "en", updated description
-Behaviour/Assumptions: Client-side language switching via context
-Rollback: Remove LanguageProvider import and wrapper
+Why: TeamVoid style redesign with sidebar layout
+What changed: Simplified layout without Notion fetch (sidebar uses static data)
+Behaviour/Assumptions: SidebarLayout uses getTeamProjects() for project list
+Rollback: Revert to previous version
 — mj
 */
 
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
+import SidebarLayout from "@/components/layout/SidebarLayout";
 import { LanguageProvider } from "@/context/LanguageContext";
 
 const inter = Inter({
@@ -34,17 +33,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${inter.variable} font-sans antialiased min-h-screen flex flex-col`}
-        style={{ background: "#f5f5f7", color: "#1d1d1f" }}
+        className={`${inter.variable} font-sans antialiased`}
+        style={{ background: "#fff", color: "#000", margin: 0 }}
       >
         <LanguageProvider>
-          <Header />
-          <main className="flex-1 pt-14">{children}</main>
-          <Footer />
+          <SidebarLayout>
+            {children}
+          </SidebarLayout>
         </LanguageProvider>
       </body>
     </html>
   );
 }
-
-

@@ -1,16 +1,14 @@
 /* CHANGE NOTE
-Why: Client component for Notes page with translations
-What changed: Extracted client side content from server page
-Behaviour/Assumptions: Receives notes as prop, handles translations
-Rollback: Delete this file, revert notes/page.tsx
+Why: TeamVoid minimal style - no boxes, clean layout
+What changed: Removed Card components, simplified styling
+Behaviour/Assumptions: Clean text-based notes display
+Rollback: Revert to previous version
 — mj
 */
 
 "use client";
 
 import NewNoteForm from "@/components/NewNoteForm";
-import Card from "@/components/Card";
-import { useLanguage } from "@/context/LanguageContext";
 
 type Note = { _id: string; title: string; body?: string; createdAt?: string };
 
@@ -19,42 +17,30 @@ type Props = {
 };
 
 export default function NotesContent({ notes }: Props) {
-    const { t } = useLanguage();
-
     return (
-        <div className="min-h-screen px-6 pt-24 pb-16">
-            <div className="max-w-5xl mx-auto">
-                <h1 className="text-base font-bold text-gray-900 mb-6">
-                    {t.guestbookTitle}
-                </h1>
+        <div className="py-8">
+            <h1 className="font-bold mb-4">Notes</h1>
 
-                <div className="max-w-2xl space-y-4">
-                    <Card className="p-4">
-                        <h2 className="text-base font-bold text-gray-900 mb-4">{t.leaveMessage}</h2>
-                        <NewNoteForm />
-                    </Card>
+            {/* Form */}
+            <section className="mb-8">
+                <NewNoteForm />
+            </section>
 
-                    <section>
-                        <h2 className="text-base font-bold text-gray-900 mb-4">
-                            {t.allMessages} ({notes.length})
-                        </h2>
-                        {Array.isArray(notes) && notes.length > 0 ? (
-                            <div className="space-y-3">
-                                {notes.map((n) => (
-                                    <Card key={n._id} className="p-4">
-                                        <div className="text-base font-bold text-gray-900">{n.title}</div>
-                                        {n.body && <div className="text-base text-gray-600 mt-1">{n.body}</div>}
-                                    </Card>
-                                ))}
+            {/* Notes list */}
+            <section>
+                {Array.isArray(notes) && notes.length > 0 ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '17px' }}>
+                        {notes.map((n) => (
+                            <div key={n._id}>
+                                <div className="font-medium">{n.title}</div>
+                                {n.body && <div className="text-gray-500">{n.body}</div>}
                             </div>
-                        ) : (
-                            <div className="text-base text-gray-500">
-                                {t.noMessages}
-                            </div>
-                        )}
-                    </section>
-                </div>
-            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="text-gray-500">No notes yet.</div>
+                )}
+            </section>
         </div>
     );
 }

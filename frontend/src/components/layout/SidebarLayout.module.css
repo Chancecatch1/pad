@@ -1,0 +1,123 @@
+.sidebarLayout {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 215px;
+    height: 100vh;
+    padding: 27px;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    z-index: 100;
+}
+
+.sidebarLogo {
+    margin-bottom: 0;
+}
+
+.logoLink {
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 16.9px;
+    color: #000;
+    text-decoration: none;
+    display: block;
+}
+
+.logoLink:hover {
+    opacity: 0.6;
+}
+
+.sidebarNav {
+    display: flex;
+    flex-direction: column;
+    gap: 17px;
+    margin-top: 27px;
+    flex: 1;
+}
+
+.navSection {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+/* Label style - not clickable, no hover */
+.navLabel {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 16.9px;
+    color: #000;
+    cursor: default;
+}
+
+.navLink {
+    display: block;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 16.9px;
+    color: #000;
+    text-decoration: none;
+}
+
+.navLink:hover {
+    opacity: 0.6;
+}
+
+.navLinkActive {
+    font-weight: 700;
+}
+
+.projectList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.projectList li {
+    margin: 0;
+}
+
+.navAbout {
+    margin-top: 17px;
+}
+
+/* Bottom section - Notes and Contact together */
+.navBottomGroup {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.mainContent {
+    margin-left: 215px;
+    flex: 1;
+    padding: 27px;
+    min-height: 100vh;
+    background: #fff;
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        padding: 16px;
+    }
+
+    .mainContent {
+        margin-left: 0;
+    }
+
+    .sidebarLayout {
+        flex-direction: column;
+    }
+}

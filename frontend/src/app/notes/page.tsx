@@ -7,8 +7,6 @@ Rollback: Revert to previous version
 */
 
 import { headers } from "next/headers";
-import NewNoteForm from "@/components/NewNoteForm";
-import Card from "@/components/Card";
 import NotesContent from "./NotesContent";
 
 type Note = { _id: string; title: string; body?: string; createdAt?: string };

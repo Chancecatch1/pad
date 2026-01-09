@@ -1,7 +1,14 @@
+/* CHANGE NOTE
+Why: TeamVoid minimal style - buttons without boxes, just text with hover
+What changed: Removed lofi variant's bg/border, simplified to text-only buttons
+Behaviour/Assumptions: Clean text buttons with opacity hover
+Rollback: Revert to previous version
+— mj
+*/
+
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Button from "@/components/Button";
 
 type Msg = { role: "user" | "assistant"; text: string; correction?: string };
 type Props = {
@@ -48,7 +55,7 @@ export default function VoiceTutor({ sessionId: extSessionId = null, onSession, 
       const r = await fetch("/api/tutor/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: userText, history: historyTurns, ...(roleConfig || {})}),
+        body: JSON.stringify({ message: userText, history: historyTurns, ...(roleConfig || {}) }),
       });
       const data = await r.json();
       const reply = data?.reply ?? "";
@@ -66,7 +73,6 @@ export default function VoiceTutor({ sessionId: extSessionId = null, onSession, 
         const blob = await ttsRes.blob();
         const url = URL.createObjectURL(blob);
 
-        // Clean up previous tutor audio URL
         if (lastTutorAudioUrl) {
           URL.revokeObjectURL(lastTutorAudioUrl);
         }
@@ -128,7 +134,7 @@ export default function VoiceTutor({ sessionId: extSessionId = null, onSession, 
     });
     const text = await r.text();
     let parsed: unknown;
-    try { parsed = JSON.parse(text); } catch {}
+    try { parsed = JSON.parse(text); } catch { /* empty */ }
     const id =
       parsed && typeof parsed === "object" && "_id" in parsed && typeof (parsed as { _id: unknown })._id === "string"
         ? (parsed as { _id: string })._id
@@ -148,18 +154,18 @@ export default function VoiceTutor({ sessionId: extSessionId = null, onSession, 
   }
 
   return (
-    <div className={compact ? "w-full space-y-2" : "w-full max-w-xl space-y-3 border p-3 rounded"}>
-      <div className="flex items-center gap-2">
-        <Button 
-          onClick={recording ? stopRec : startRec} 
-          disabled={busy} 
-          variant="lofi"
-          responsive
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+      {/* Control buttons - simple text, no boxes */}
+      <div style={{ display: 'flex', gap: '16px' }}>
+        <button
+          onClick={recording ? stopRec : startRec}
+          disabled={busy}
+          className={`hover:opacity-60 disabled:opacity-30 ${recording ? 'font-bold' : ''}`}
         >
           {recording ? "Stop" : "record"}
-        </Button>
-        
-        <Button 
+        </button>
+
+        <button
           onClick={async () => {
             const audioUrl = pendingAudioUrl || lastTutorAudioUrl;
             if (audioUrl) {
@@ -174,27 +180,25 @@ export default function VoiceTutor({ sessionId: extSessionId = null, onSession, 
             }
           }}
           disabled={busy || (!pendingAudioUrl && !lastTutorAudioUrl)}
-          variant="lofi"
-          responsive
+          className="hover:opacity-60 disabled:opacity-30"
         >
           play
-        </Button>
+        </button>
 
-        <Button 
-          onClick={() => setShowTypeBox((v) => !v)} 
-          disabled={busy} 
-          variant="lofi"
-          responsive
+        <button
+          onClick={() => setShowTypeBox((v) => !v)}
+          disabled={busy}
+          className={`hover:opacity-60 disabled:opacity-30 ${showTypeBox ? 'font-bold' : ''}`}
         >
           type
-        </Button>
-        
-        {busy && <div className={compact ? "text-xs opacity-70" : "text-sm opacity-70"}>Processing…</div>}
+        </button>
+
+        {busy && <span className="opacity-50">Processing…</span>}
       </div>
 
       {showTypeBox && (
         <form
-          className="flex items-center gap-2"
+          style={{ display: 'flex', gap: '8px' }}
           onSubmit={async (e) => {
             e.preventDefault();
             const t = manualText.trim();
@@ -204,24 +208,29 @@ export default function VoiceTutor({ sessionId: extSessionId = null, onSession, 
           }}
         >
           <input
-            className="flex-1 border p-2 rounded"
+            className="flex-1 bg-transparent focus:outline-none"
             placeholder="Type a message..."
             value={manualText}
             onChange={(e) => setManualText(e.target.value)}
           />
-          <Button disabled={busy || !manualText.trim()} type="submit" variant="lofi" responsive>Send</Button>
+          <button
+            disabled={busy || !manualText.trim()}
+            type="submit"
+            className="hover:opacity-60 disabled:opacity-30"
+          >
+            Send
+          </button>
         </form>
       )}
 
       {!hideMessages && (
-        <div className="space-y-2">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           {messages.map((m, i) => (
-            <div key={i} className="text-sm">
-              <div className={m.role === "user" ? "font-medium" : "text-blue-700"}>
-                {m.role === "user" ? "You" : "Tutor"}: {m.text}
-              </div>
+            <div key={i}>
+              <span className="text-gray-400 mr-2">{m.role === "user" ? "You" : "Tutor"}:</span>
+              <span>{m.text}</span>
               {m.correction && (
-                <div className="opacity-70">{m.correction}</div>
+                <div className="text-gray-500 mt-1">{m.correction}</div>
               )}
             </div>
           ))}

@@ -1,177 +1,99 @@
 /* CHANGE NOTE
-Why: Use curated portfolio projects with rich descriptions
-What changed: Replaced GitHub API fetching with curated portfolio data
-Behaviour/Assumptions: Portfolio data manually maintained with rich content
+Why: Added proper spacing between intro and images, better layout
+What changed: Increased spacing, added line height for better readability
+Behaviour/Assumptions: Clear visual separation between sections
 Rollback: Revert to previous version
 — mj
 */
 
 "use client";
 
-import { useState } from 'react';
-import { getMember } from '@/data/members';
+import Link from 'next/link';
+import Image from 'next/image';
 import { getMemberProjects } from '@/data/projects';
-import { portfolioProjects, getFeaturedPortfolioProjects } from '@/data/portfolio';
-import ProjectCard from '@/components/sections/ProjectCard';
-import PortfolioProjectCard from '@/components/sections/PortfolioProjectCard';
-import { useLanguage } from '@/context/LanguageContext';
+import { portfolioProjects } from '@/data/portfolio';
 
 export default function MJPage() {
-    const member = getMember('mj');
-    const projects = getMemberProjects('mj');
-    const { t } = useLanguage();
-    const [showAllProjects, setShowAllProjects] = useState(false);
+    const memberProjects = getMemberProjects('mj');
 
-    const featuredProjects = getFeaturedPortfolioProjects();
-
-    if (!member) {
-        return (
-            <div className="min-h-screen px-6 py-16 text-center">
-                <h1 className="text-2xl font-bold text-gray-900">Member Not Found</h1>
-            </div>
-        );
-    }
+    // Combine team projects and portfolio, sort by date (newest first)
+    const allWorks = [
+        ...memberProjects.map(p => ({
+            slug: p.slug,
+            title: p.title,
+            thumbnail: p.thumbnail,
+            href: p.isTeamProject ? `/projects/${p.slug}` : (p.links.demo || `/projects/${p.slug}`),
+            date: p.date || '2020',
+        })),
+        ...portfolioProjects.map(p => ({
+            slug: p.slug,
+            title: p.title,
+            thumbnail: p.thumbnail,
+            href: `/members/mj/portfolio/${p.slug}`,
+            date: p.date || '2020',
+        })),
+    ].sort((a, b) => {
+        const dateA = a.date.replace(/\./g, '');
+        const dateB = b.date.replace(/\./g, '');
+        return dateB.localeCompare(dateA);
+    });
 
     return (
-        <div className="min-h-screen px-6 pt-24 pb-16">
-            <div className="max-w-5xl mx-auto">
-                {/* Profile Header */}
-                <div className="mb-12 max-w-2xl">
-                    <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
-                        {member.name}
-                    </h1>
-                    <p className="text-lg text-gray-500 mb-4">{member.role}</p>
-                    <p className="text-gray-600">{member.bio}</p>
+        <div style={{ padding: '27px 0' }}>
+            {/* Profile Header */}
+            <section style={{ marginBottom: '50px' }}>
+                <h1 style={{ fontWeight: 700, fontSize: '16px', marginBottom: '8px' }}>Mj</h1>
+                <p style={{ color: '#666', marginBottom: '16px', lineHeight: '1.6' }}>HCI Research Assistant</p>
+                <p style={{ color: '#444', lineHeight: '1.7' }}>
+                    Hey there! I&apos;m a machine learning engineer, currently pursuing my MSc at the University of Calgary,
+                    focusing on AI-assisted AR for healthcare. Before this, I worked as a project manager in the arts field.
+                </p>
+            </section>
 
-                    {/* Social Links */}
-                    <div className="flex items-center gap-4 mt-4 flex-wrap">
-                        {member.socials.website && (
-                            <a
-                                href={member.socials.website}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-gray-500 hover:text-gray-900 transition-colors"
-                            >
-                                CV
-                            </a>
-                        )}
-                        {member.socials.linkedin && (
-                            <a
-                                href={member.socials.linkedin}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-gray-500 hover:text-gray-900 transition-colors"
-                            >
-                                LinkedIn
-                            </a>
-                        )}
-                        {member.socials.github && (
-                            <a
-                                href={member.socials.github}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-gray-500 hover:text-gray-900 transition-colors"
-                            >
-                                GitHub
-                            </a>
-                        )}
-                    </div>
+            {/* Works - Image Grid */}
+            <section>
+                <div
+                    style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fill, 200px)',
+                        gap: '25px'
+                    }}
+                >
+                    {allWorks.map((work) => (
+                        <Link
+                            key={work.slug}
+                            href={work.href}
+                            className="block hover:opacity-60"
+                            style={{ width: '200px' }}
+                            title={work.title}
+                        >
+                            <div style={{ width: '200px', height: '150px', background: '#e0e0e0', overflow: 'hidden' }}>
+                                {work.thumbnail ? (
+                                    <Image
+                                        src={work.thumbnail}
+                                        alt={work.title}
+                                        width={200}
+                                        height={150}
+                                        style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+                                    />
+                                ) : (
+                                    <div style={{
+                                        width: '100%',
+                                        height: '100%',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        color: '#666',
+                                        fontSize: '24px'
+                                    }}>
+                                        {work.title.charAt(0)}
+                                    </div>
+                                )}
+                            </div>
+                        </Link>
+                    ))}
                 </div>
-
-                {/* Education */}
-                <section className="mb-10 max-w-2xl">
-                    <h2 className="text-xl font-bold text-gray-900 mb-4">Education</h2>
-                    <div className="space-y-3 text-sm">
-                        <div>
-                            <div className="font-medium text-gray-900">University of Calgary</div>
-                            <div className="text-gray-600">MSc, Electrical and Software Engineering (HXI Lab) · 2024 - present</div>
-                        </div>
-                        <div>
-                            <div className="font-medium text-gray-900">Soongsil University</div>
-                            <div className="text-gray-600">BSc, Chemical Engineering · 2007 - 2014</div>
-                        </div>
-                        <div>
-                            <div className="font-medium text-gray-900">Korea National Open University</div>
-                            <div className="text-gray-600">BSc, Computer Science · 2024 - present</div>
-                        </div>
-                    </div>
-                </section>
-
-                {/* Experience */}
-                <section className="mb-10 max-w-2xl">
-                    <h2 className="text-xl font-bold text-gray-900 mb-4">Experience</h2>
-                    <div className="space-y-3 text-sm">
-                        <div>
-                            <div className="font-medium text-gray-900">University of Calgary · Graduate Research Assistant</div>
-                            <div className="text-gray-600">AI-assisted AR for collaborative medical training · Sep 2024 - present</div>
-                        </div>
-                        <div>
-                            <div className="font-medium text-gray-900">Books so Inc. · Machine Learning Engineer</div>
-                            <div className="text-gray-600">Audio ML models, RAG, sLLM development · Dec 2023 - Sep 2024</div>
-                        </div>
-                        <div>
-                            <div className="font-medium text-gray-900">Seoul Foundation for Arts & Culture · Project Manager</div>
-                            <div className="text-gray-600">100+ arts and culture events, database systems · Feb 2020 - Aug 2023</div>
-                        </div>
-                    </div>
-                </section>
-
-                {/* Skills */}
-                <section className="mb-10 max-w-2xl">
-                    <h2 className="text-xl font-bold text-gray-900 mb-4">Skills</h2>
-                    <div className="flex flex-wrap gap-2">
-                        {['Python', 'TypeScript', 'Unity', 'Next.js', 'Machine Learning', 'AR/VR', 'LLM', 'HCI', 'Docker', 'Git'].map((skill) => (
-                            <span key={skill} className="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-full">
-                                {skill}
-                            </span>
-                        ))}
-                    </div>
-                </section>
-
-                {/* Team Projects */}
-                <section className="mb-10 max-w-2xl">
-                    <h2 className="text-xl font-bold text-gray-900 mb-4">{t.projectsTitle}</h2>
-                    {projects.length > 0 ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {projects.map((project) => (
-                                <ProjectCard
-                                    key={project.slug}
-                                    project={project}
-                                    basePath={project.isTeamProject ? '/projects' : '/members/mj/projects'}
-                                />
-                            ))}
-                        </div>
-                    ) : (
-                        <div className="text-center py-12 text-gray-500">
-                            {t.noProjects}
-                        </div>
-                    )}
-                </section>
-
-                {/* Portfolio Projects */}
-                <section className="max-w-2xl">
-                    <h2 className="text-xl font-bold text-gray-900 mb-4">Portfolio</h2>
-                    <p className="text-gray-600 mb-6 text-sm">Featured projects showcasing my skills and experience</p>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {(showAllProjects ? portfolioProjects : featuredProjects).map((project) => (
-                            <PortfolioProjectCard key={project.slug} project={project} />
-                        ))}
-                    </div>
-                    {portfolioProjects.length > featuredProjects.length && (
-                        <div className="mt-6">
-                            <button
-                                onClick={() => setShowAllProjects(!showAllProjects)}
-                                className="text-sm text-gray-500 hover:text-gray-900 transition-colors cursor-pointer"
-                            >
-                                {showAllProjects
-                                    ? '← Show less'
-                                    : `+ ${portfolioProjects.length - featuredProjects.length} more projects`
-                                }
-                            </button>
-                        </div>
-                    )}
-                </section>
-            </div>
+            </section>
         </div>
     );
 }

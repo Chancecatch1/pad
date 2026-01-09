@@ -1,8 +1,8 @@
 /* CHANGE NOTE
-Why: Display detailed portfolio project page
-What changed: Created portfolio project detail page with full description
-Behaviour/Assumptions: Shows project details and links to GitHub
-Rollback: Delete this file
+Why: Added proper spacing between all sections
+What changed: Increased spacing between all elements for better readability
+Behaviour/Assumptions: Clear visual separation between sections
+Rollback: Revert to previous version
 — mj
 */
 
@@ -19,140 +19,82 @@ export default function PortfolioProjectPage() {
 
     if (!project) {
         return (
-            <div className="min-h-screen px-6 py-16 text-center">
-                <h1 className="text-2xl font-bold text-gray-900">Project Not Found</h1>
-                <Link href="/members/mj" className="text-blue-600 hover:underline mt-4 inline-block">
+            <div style={{ padding: '27px 0' }}>
+                <p>Project Not Found</p>
+                <Link href="/members/mj" className="hover:opacity-60" style={{ marginTop: '16px', display: 'inline-block' }}>
                     ← Back to Portfolio
                 </Link>
             </div>
         );
     }
 
-    const categoryColors: Record<string, string> = {
-        research: 'bg-purple-100 text-purple-700',
-        ml: 'bg-blue-100 text-blue-700',
-        web: 'bg-green-100 text-green-700',
-        automation: 'bg-orange-100 text-orange-700',
-        study: 'bg-gray-100 text-gray-700',
-    };
-
-    const categoryLabels: Record<string, string> = {
-        research: 'Research',
-        ml: 'ML/AI',
-        web: 'Web',
-        automation: 'Automation',
-        study: 'Study',
-    };
-
     return (
-        <div className="min-h-screen px-6 py-16">
-            <div className="max-w-3xl mx-auto">
-                {/* Back Link */}
-                <Link
-                    href="/members/mj"
-                    className="text-gray-500 hover:text-gray-900 transition-colors mb-8 inline-block"
-                >
-                    ← Back to Portfolio
-                </Link>
+        <div style={{ padding: '27px 0' }}>
+            {/* Back Link */}
+            <Link href="/members/mj" className="hover:opacity-60" style={{ color: '#666', marginBottom: '32px', display: 'inline-block' }}>
+                ← Back to Portfolio
+            </Link>
 
-                {/* Header */}
-                <div className="mb-8">
-                    <div className="flex items-center gap-2 mb-3">
-                        <span className={`text-sm px-3 py-1 rounded-full ${categoryColors[project.category]}`}>
-                            {categoryLabels[project.category]}
-                        </span>
-                        {project.featured && (
-                            <span className="text-sm px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full">
-                                ⭐ Featured
-                            </span>
-                        )}
-                        <span className="text-sm text-gray-400">{project.date}</span>
-                    </div>
-                    <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                        {project.title}
-                    </h1>
-                    <p className="text-lg text-gray-600">
-                        {project.description}
-                    </p>
-                </div>
-
-                {/* Links */}
-                <div className="flex gap-4 mb-8">
-                    {project.links.github && (
-                        <a
-                            href={project.links.github}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors"
-                        >
-                            GitHub →
-                        </a>
-                    )}
-                    {project.links.live && (
-                        <a
-                            href={project.links.live}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                        >
-                            Live Demo →
-                        </a>
-                    )}
-                </div>
-
-                {/* Tech Stack */}
-                <section className="mb-8 rounded-xl border border-gray-200 bg-white p-6">
-                    <h2 className="text-lg font-bold text-gray-900 mb-4">Tech Stack</h2>
-                    <div className="flex flex-wrap gap-2">
-                        {project.techStack.map((tech) => (
-                            <span
-                                key={tech}
-                                className="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-full"
-                            >
-                                {tech}
-                            </span>
-                        ))}
-                    </div>
-                </section>
-
-                {/* Highlights */}
-                {project.highlights && project.highlights.length > 0 && (
-                    <section className="mb-8 rounded-xl border border-gray-200 bg-white p-6">
-                        <h2 className="text-lg font-bold text-gray-900 mb-4">Key Highlights</h2>
-                        <ul className="space-y-2">
-                            {project.highlights.map((highlight, i) => (
-                                <li key={i} className="flex items-start gap-2 text-gray-700">
-                                    <span className="text-blue-500 mt-1">•</span>
-                                    {highlight}
-                                </li>
-                            ))}
-                        </ul>
-                    </section>
-                )}
-
-                {/* Long Description */}
-                <section className="mb-8 rounded-xl border border-gray-200 bg-white p-6">
-                    <h2 className="text-lg font-bold text-gray-900 mb-4">About This Project</h2>
-                    <div className="text-gray-700 whitespace-pre-line leading-relaxed">
-                        {project.longDescription}
-                    </div>
-                </section>
-
-                {/* Languages */}
-                <section className="rounded-xl border border-gray-200 bg-white p-6">
-                    <h2 className="text-lg font-bold text-gray-900 mb-4">Languages</h2>
-                    <div className="flex flex-wrap gap-2">
-                        {project.languages.map((lang) => (
-                            <span
-                                key={lang}
-                                className="px-3 py-1 text-sm bg-blue-50 text-blue-700 rounded-full"
-                            >
-                                {lang}
-                            </span>
-                        ))}
-                    </div>
-                </section>
+            {/* Header */}
+            <div style={{ marginBottom: '32px' }}>
+                <h1 style={{ fontWeight: 700, fontSize: '16px', marginBottom: '8px' }}>{project.title}</h1>
+                <p style={{ color: '#666', marginBottom: '12px' }}>{project.date}</p>
+                <p style={{ color: '#444', lineHeight: '1.7' }}>{project.description}</p>
             </div>
+
+            {/* Links */}
+            <div style={{ display: 'flex', gap: '24px', marginBottom: '32px' }}>
+                {project.links.github && (
+                    <a
+                        href={project.links.github}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:opacity-60"
+                    >
+                        GitHub →
+                    </a>
+                )}
+                {project.links.live && (
+                    <a
+                        href={project.links.live}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:opacity-60"
+                    >
+                        Live Demo →
+                    </a>
+                )}
+            </div>
+
+            {/* Tech Stack */}
+            <section style={{ marginBottom: '32px' }}>
+                <h2 style={{ fontWeight: 700, marginBottom: '12px' }}>Tech Stack</h2>
+                <p style={{ color: '#444', lineHeight: '1.6' }}>{project.techStack.join(' · ')}</p>
+            </section>
+
+            {/* Highlights */}
+            {project.highlights && project.highlights.length > 0 && (
+                <section style={{ marginBottom: '32px' }}>
+                    <h2 style={{ fontWeight: 700, marginBottom: '12px' }}>Key Highlights</h2>
+                    <ul style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        {project.highlights.map((highlight, i) => (
+                            <li key={i} style={{ color: '#444', lineHeight: '1.6' }}>• {highlight}</li>
+                        ))}
+                    </ul>
+                </section>
+            )}
+
+            {/* Long Description */}
+            <section style={{ marginBottom: '32px' }}>
+                <h2 style={{ fontWeight: 700, marginBottom: '12px' }}>About This Project</h2>
+                <p style={{ color: '#444', lineHeight: '1.7', whiteSpace: 'pre-line' }}>{project.longDescription}</p>
+            </section>
+
+            {/* Languages */}
+            <section>
+                <h2 style={{ fontWeight: 700, marginBottom: '12px' }}>Languages</h2>
+                <p style={{ color: '#444', lineHeight: '1.6' }}>{project.languages.join(' · ')}</p>
+            </section>
         </div>
     );
 }
