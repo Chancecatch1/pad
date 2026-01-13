@@ -266,6 +266,7 @@ export async function getPageContent(pageId: string): Promise<NotionBlock[]> {
     }
 
     // Helper to fetch children of a block
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async function fetchChildren(blockId: string): Promise<any[]> {
         try {
             const response = await notionFetch(`/blocks/${blockId}/children?page_size=100`);
@@ -283,6 +284,7 @@ export async function getPageContent(pageId: string): Promise<NotionBlock[]> {
             const rows: string[][] = [];
             for (const row of response.results) {
                 if (row.type === 'table_row') {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     const cells = row.table_row.cells.map((cell: any[]) =>
                         extractPlainText(cell)
                     );
@@ -297,6 +299,7 @@ export async function getPageContent(pageId: string): Promise<NotionBlock[]> {
     }
 
     // Helper function to process a single block recursively
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async function processBlock(block: any): Promise<NotionBlock | null> {
         const blockData: NotionBlock = {
             id: block.id,
@@ -439,6 +442,7 @@ export async function getPageContent(pageId: string): Promise<NotionBlock[]> {
         const response = await notionFetch(`/blocks/${pageId}/children?page_size=100`);
         // Process all top-level blocks in parallel
         const processedBlocks = await Promise.all(
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             response.results.map((block: any) => processBlock(block))
         );
         const blocks = processedBlocks.filter((b): b is NotionBlock => b !== null);

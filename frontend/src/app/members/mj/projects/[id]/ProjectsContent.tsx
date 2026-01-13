@@ -307,7 +307,7 @@ export default function PortfolioContent({ content }: Props) {
                         }}
                         className="hover:opacity-60"
                     >
-                        🔗 {block.caption || (block.url?.length > 50 ? block.url.substring(0, 50) + '...' : block.url)}
+                        🔗 {block.caption || (block.url && block.url.length > 50 ? block.url.substring(0, 50) + '...' : block.url)}
                     </a>
                 );
             case 'pdf':
