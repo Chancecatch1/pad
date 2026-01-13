@@ -84,7 +84,7 @@ function extractUrl(richText: Array<{ plain_text: string; href?: string; text?: 
 }
 
 // Fetch portfolio projects from Notion database
-export async function getPortfolioProjects(): Promise<NotionPortfolioProject[]> {
+export async function getProjects(): Promise<NotionPortfolioProject[]> {
     if (!NOTION_API_KEY) {
         console.warn('NOTION_API_KEY not set, returning empty projects');
         return [];
@@ -94,7 +94,13 @@ export async function getPortfolioProjects(): Promise<NotionPortfolioProject[]> 
         const response = await notionFetch(`/databases/${PORTFOLIO_DB_ID}/query`, {
             method: 'POST',
             body: JSON.stringify({
-                sorts: [{ property: 'Name', direction: 'ascending' }],
+                filter: {
+                    property: 'show',
+                    checkbox: {
+                        equals: true,
+                    },
+                },
+                sorts: [{ property: 'When', direction: 'descending' }],
             }),
         });
 
@@ -123,7 +129,7 @@ export async function getPortfolioProjects(): Promise<NotionPortfolioProject[]> 
                 : undefined;
 
             // Extract tags
-            const tagsProp = props['Tags'];
+            const tagsProp = props['Tag'];
             const tags = tagsProp?.type === 'multi_select'
                 ? tagsProp.multi_select.map((t: { name: string }) => t.name)
                 : [];
@@ -158,11 +164,11 @@ export async function getPortfolioProjects(): Promise<NotionPortfolioProject[]> 
                 }
             }
 
-            // Create slug from title
-            const slug = title
-                .toLowerCase()
-                .replace(/[^a-z0-9]+/g, '-')
-                .replace(/(^-|-$)/g, '');
+            // Get slug from property or generate from title
+            const slugProp = props['slug'];
+            const slug = slugProp?.type === 'rich_text' && slugProp.rich_text?.length > 0
+                ? extractPlainText(slugProp.rich_text)
+                : title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 
             projects.push({
                 id: page.id,
@@ -225,12 +231,221 @@ export async function getCVData(): Promise<NotionCVData | null> {
 
 // Get all project slugs for static generation
 export async function getAllProjectSlugs(): Promise<string[]> {
-    const projects = await getPortfolioProjects();
+    const projects = await getProjects();
     return projects.map((p) => p.slug);
 }
 
 // Get single project by slug
 export async function getProjectBySlug(slug: string): Promise<NotionPortfolioProject | null> {
-    const projects = await getPortfolioProjects();
+    const projects = await getProjects();
     return projects.find((p) => p.slug === slug) || null;
+}
+
+// Block content types
+export interface NotionBlock {
+    id: string;
+    type: string;
+    content?: string;
+    url?: string;  // For images, links
+    caption?: string;
+    children?: NotionBlock[];
+    // For tables
+    tableRows?: string[][];
+    // For child_page and child_database
+    title?: string;
+    pageId?: string;
+    // For links in rich text
+    href?: string;
+}
+
+// Get page content (blocks) by page ID
+export async function getPageContent(pageId: string): Promise<NotionBlock[]> {
+    if (!NOTION_API_KEY) {
+        console.warn('NOTION_API_KEY not set');
+        return [];
+    }
+
+    // Helper to fetch children of a block
+    async function fetchChildren(blockId: string): Promise<any[]> {
+        try {
+            const response = await notionFetch(`/blocks/${blockId}/children?page_size=100`);
+            return response.results || [];
+        } catch (e) {
+            console.error(`Error fetching children for ${blockId}:`, e);
+            return [];
+        }
+    }
+
+    // Helper to fetch table rows
+    async function fetchTableRows(tableBlockId: string): Promise<string[][]> {
+        try {
+            const response = await notionFetch(`/blocks/${tableBlockId}/children?page_size=100`);
+            const rows: string[][] = [];
+            for (const row of response.results) {
+                if (row.type === 'table_row') {
+                    const cells = row.table_row.cells.map((cell: any[]) =>
+                        extractPlainText(cell)
+                    );
+                    rows.push(cells);
+                }
+            }
+            return rows;
+        } catch (e) {
+            console.error('Error fetching table rows:', e);
+            return [];
+        }
+    }
+
+    // Helper function to process a single block recursively
+    async function processBlock(block: any): Promise<NotionBlock | null> {
+        const blockData: NotionBlock = {
+            id: block.id,
+            type: block.type,
+        };
+
+        switch (block.type) {
+            case 'paragraph':
+                blockData.content = extractPlainText(block.paragraph?.rich_text || []);
+                break;
+            case 'heading_1':
+                blockData.content = extractPlainText(block.heading_1?.rich_text || []);
+                break;
+            case 'heading_2':
+                blockData.content = extractPlainText(block.heading_2?.rich_text || []);
+                break;
+            case 'heading_3':
+                blockData.content = extractPlainText(block.heading_3?.rich_text || []);
+                break;
+            case 'bulleted_list_item':
+                blockData.content = extractPlainText(block.bulleted_list_item?.rich_text || []);
+                break;
+            case 'numbered_list_item':
+                blockData.content = extractPlainText(block.numbered_list_item?.rich_text || []);
+                break;
+            case 'to_do':
+                blockData.content = extractPlainText(block.to_do?.rich_text || []);
+                break;
+            case 'toggle':
+                blockData.content = extractPlainText(block.toggle?.rich_text || []);
+                break;
+            case 'image':
+                if (block.image?.type === 'file') {
+                    blockData.url = block.image.file.url;
+                } else if (block.image?.type === 'external') {
+                    blockData.url = block.image.external.url;
+                }
+                blockData.caption = extractPlainText(block.image?.caption || []);
+                break;
+            case 'video':
+                if (block.video?.type === 'file') {
+                    blockData.url = block.video.file.url;
+                } else if (block.video?.type === 'external') {
+                    blockData.url = block.video.external.url;
+                }
+                break;
+            case 'audio':
+                if (block.audio?.type === 'file') {
+                    blockData.url = block.audio.file.url;
+                } else if (block.audio?.type === 'external') {
+                    blockData.url = block.audio.external.url;
+                }
+                blockData.caption = extractPlainText(block.audio?.caption || []);
+                break;
+            case 'file':
+                if (block.file?.type === 'file') {
+                    blockData.url = block.file.file.url;
+                    blockData.content = block.file.name || 'Download file';
+                } else if (block.file?.type === 'external') {
+                    blockData.url = block.file.external.url;
+                    blockData.content = block.file.name || 'Download file';
+                }
+                blockData.caption = extractPlainText(block.file?.caption || []);
+                break;
+            case 'pdf':
+                if (block.pdf?.type === 'file') {
+                    blockData.url = block.pdf.file.url;
+                } else if (block.pdf?.type === 'external') {
+                    blockData.url = block.pdf.external.url;
+                }
+                blockData.caption = extractPlainText(block.pdf?.caption || []);
+                break;
+            case 'embed':
+                blockData.url = block.embed?.url;
+                blockData.caption = extractPlainText(block.embed?.caption || []);
+                break;
+            case 'bookmark':
+                blockData.url = block.bookmark?.url;
+                blockData.caption = extractPlainText(block.bookmark?.caption || []);
+                break;
+            case 'link_preview':
+                blockData.url = block.link_preview?.url;
+                break;
+            case 'table':
+                // Fetch table rows
+                blockData.tableRows = await fetchTableRows(block.id);
+                break;
+            case 'child_page':
+                blockData.title = block.child_page?.title || 'Untitled';
+                blockData.pageId = block.id;
+                break;
+            case 'child_database':
+                blockData.title = block.child_database?.title || 'Database';
+                blockData.pageId = block.id;
+                break;
+            case 'column_list':
+            case 'column':
+                // Children will be fetched below
+                break;
+            case 'divider':
+                // Just mark as divider
+                break;
+            case 'quote':
+                blockData.content = extractPlainText(block.quote?.rich_text || []);
+                break;
+            case 'callout':
+                blockData.content = extractPlainText(block.callout?.rich_text || []);
+                break;
+            case 'code':
+                blockData.content = extractPlainText(block.code?.rich_text || []);
+                blockData.caption = block.code?.language || '';
+                break;
+            default:
+                // Skip unsupported block types
+                return null;
+        }
+
+        // Recursively fetch children for ANY block that has_children = true (PARALLEL)
+        if (block.has_children && block.type !== 'table') {
+            const childBlocks = await fetchChildren(block.id);
+            // Process all children in parallel
+            const processedChildren = await Promise.all(
+                childBlocks.map(child => processBlock(child))
+            );
+            const children = processedChildren.filter((c): c is NotionBlock => c !== null);
+            if (children.length > 0) {
+                blockData.children = children;
+            }
+        }
+
+        // Return block if it has content, url, children, tableRows, title, or is a divider
+        if (blockData.content || blockData.url || blockData.children?.length ||
+            blockData.tableRows?.length || blockData.title || block.type === 'divider') {
+            return blockData;
+        }
+        return null;
+    }
+
+    try {
+        const response = await notionFetch(`/blocks/${pageId}/children?page_size=100`);
+        // Process all top-level blocks in parallel
+        const processedBlocks = await Promise.all(
+            response.results.map((block: any) => processBlock(block))
+        );
+        const blocks = processedBlocks.filter((b): b is NotionBlock => b !== null);
+
+        return blocks;
+    } catch (error) {
+        console.error('Error fetching page content:', error);
+        return [];
+    }
 }

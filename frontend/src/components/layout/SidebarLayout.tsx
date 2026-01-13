@@ -28,7 +28,8 @@ export default function SidebarLayout({ children }: SidebarLayoutProps) {
                 {/* Logo */}
                 <div className={styles.sidebarLogo}>
                     <Link href="/" className={styles.logoLink}>
-                        PAD
+                        <span style={{ fontWeight: 700 }}>PAD</span>
+                        <span style={{ fontWeight: 400 }}> - Pine at Dawn</span>
                     </Link>
                 </div>
 

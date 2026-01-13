@@ -30,8 +30,8 @@ export default function TutorPage() {
   const [selectedLearner, setSelectedLearner] = useState<string>("");
 
   return (
-    <div className="py-8">
-      <h1 className="font-bold mb-4">Tutor</h1>
+    <div style={{ padding: '27px 0' }}>
+      <h1 style={{ fontWeight: 700, fontSize: '16px', marginBottom: '50px' }}>Tutor</h1>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '17px' }}>
         {/* Role-play options */}

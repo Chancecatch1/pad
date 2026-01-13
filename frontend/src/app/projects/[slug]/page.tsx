@@ -26,11 +26,13 @@ export default function ProjectDetailPage() {
     }
 
     return (
-        <div className="py-8">
-            <h1 className="font-bold mb-4">{project.title}</h1>
+        <div style={{ padding: '27px 0' }}>
+            <section style={{ marginBottom: '50px' }}>
+                <h1 style={{ fontWeight: 700, fontSize: '16px', marginBottom: '8px' }}>{project.title}</h1>
+            </section>
 
             {/* Links only - no description text */}
-            <div className="flex gap-4">
+            <div style={{ display: 'flex', gap: '16px' }}>
                 {project.links.live && (
                     <a href={project.links.live} target="_blank" rel="noopener noreferrer" className="hover:opacity-60">
                         View Exhibition →

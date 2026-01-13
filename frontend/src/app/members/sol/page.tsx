@@ -22,12 +22,12 @@ export default function SolPage() {
     }
 
     return (
-        <div className="py-8">
+        <div style={{ padding: '27px 0' }}>
             {/* Profile Header - same style as MJ page */}
-            <section className="mb-8">
-                <h1 className="font-bold text-lg mb-1">{member.name}</h1>
-                <p className="text-gray-500 mb-4">{member.role}</p>
-                <p className="text-gray-600 mb-4">{member.bio}</p>
+            <section style={{ marginBottom: '50px' }}>
+                <h1 style={{ fontWeight: 700, fontSize: '16px', marginBottom: '8px' }}>{member.name}</h1>
+                <p style={{ color: '#666', marginBottom: '16px', lineHeight: '1.6' }}>{member.role}</p>
+                <p style={{ color: '#444', lineHeight: '1.7' }}>{member.bio}</p>
             </section>
         </div>
     );

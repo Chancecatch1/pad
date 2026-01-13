@@ -18,11 +18,11 @@ type Props = {
 
 export default function NotesContent({ notes }: Props) {
     return (
-        <div className="py-8">
-            <h1 className="font-bold mb-4">Notes</h1>
+        <div style={{ padding: '27px 0' }}>
+            <h1 style={{ fontWeight: 700, fontSize: '16px', marginBottom: '8px' }}>Notes</h1>
 
             {/* Form */}
-            <section className="mb-8">
+            <section style={{ marginBottom: '50px' }}>
                 <NewNoteForm />
             </section>
 
@@ -32,13 +32,13 @@ export default function NotesContent({ notes }: Props) {
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '17px' }}>
                         {notes.map((n) => (
                             <div key={n._id}>
-                                <div className="font-medium">{n.title}</div>
-                                {n.body && <div className="text-gray-500">{n.body}</div>}
+                                <div style={{ fontWeight: 500 }}>{n.title}</div>
+                                {n.body && <div style={{ color: '#666' }}>{n.body}</div>}
                             </div>
                         ))}
                     </div>
                 ) : (
-                    <div className="text-gray-500">No notes yet.</div>
+                    <div style={{ color: '#666' }}>No notes yet.</div>
                 )}
             </section>
         </div>

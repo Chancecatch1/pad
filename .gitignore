@@ -32,6 +32,5 @@ cursor-talk-to-figma-mcp
 .env*.local
 
 # Personal
-.prompt
 github-repos
 docs

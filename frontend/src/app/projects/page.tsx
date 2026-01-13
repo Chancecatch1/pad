@@ -17,24 +17,28 @@ export default function ProjectsPage() {
     const { t } = useLanguage();
 
     return (
-        <div className="min-h-screen px-6 pt-24 pb-16">
-            <div className="max-w-5xl mx-auto">
-                <h1 className="text-base font-bold text-gray-900 mb-6">
+        <div style={{ padding: '27px 0' }}>
+            <section style={{ marginBottom: '50px' }}>
+                <h1 style={{ fontWeight: 700, fontSize: '16px', marginBottom: '8px' }}>
                     {t.projectsTitle}
                 </h1>
+            </section>
 
-                {projects.length > 0 ? (
-                    <div className="max-w-2xl space-y-4">
-                        {projects.map((project) => (
-                            <ProjectCard key={project.slug} project={project} />
-                        ))}
-                    </div>
-                ) : (
-                    <div className="text-center py-12 text-gray-500">
-                        {t.noProjects}
-                    </div>
-                )}
-            </div>
+            {projects.length > 0 ? (
+                <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fill, 200px)',
+                    gap: '25px'
+                }}>
+                    {projects.map((project) => (
+                        <ProjectCard key={project.slug} project={project} />
+                    ))}
+                </div>
+            ) : (
+                <div style={{ color: '#666' }}>
+                    {t.noProjects}
+                </div>
+            )}
         </div>
     );
 }

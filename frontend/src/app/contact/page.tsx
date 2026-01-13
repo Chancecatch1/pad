@@ -8,8 +8,8 @@ Rollback: Revert to previous version
 
 export default function ContactPage() {
     return (
-        <div className="py-8">
-            <h1 className="font-bold mb-4">Contact</h1>
+        <div style={{ padding: '27px 0' }}>
+            <h1 style={{ fontWeight: 700, fontSize: '16px', marginBottom: '8px' }}>Contact</h1>
             <a href="mailto:padcollective@gmail.com" className="hover:opacity-60">
                 padcollective@gmail.com
             </a>
