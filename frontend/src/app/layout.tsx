@@ -11,6 +11,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import SidebarLayout from "@/components/layout/SidebarLayout";
 import { LanguageProvider } from "@/context/LanguageContext";
+import { getPADProjects } from "@/lib/notion";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -25,11 +26,15 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export const revalidate = 300; // ISR for layout/sidebar
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const projects = await getPADProjects();
+
   return (
     <html lang="en">
       <body
@@ -37,7 +42,7 @@ export default function RootLayout({
         style={{ background: "#fff", color: "#000", margin: 0 }}
       >
         <LanguageProvider>
-          <SidebarLayout>
+          <SidebarLayout projects={projects}>
             {children}
           </SidebarLayout>
         </LanguageProvider>

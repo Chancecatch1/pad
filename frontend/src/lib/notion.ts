@@ -8,6 +8,7 @@ Rollback: Delete this file
 
 // Database and Page IDs
 const PORTFOLIO_DB_ID = process.env.NOTION_PORTFOLIO_DB_ID || '18b7d9f7-3313-803e-841a-d9257848b01f';
+const PAD_PROJECTS_DB_ID = process.env.NOTION_PAD_PROJECTS_DB_ID || '2e87d9f7-3313-800e-8972-f9e4fdfed113';
 const CV_PAGE_ID = process.env.NOTION_CV_PAGE_ID || '18b7d9f7-3313-80d7-9ab7-c0af9e1217e2';
 const NOTION_API_KEY = process.env.NOTION_API_KEY;
 
@@ -24,6 +25,22 @@ export interface NotionPortfolioProject {
     employer?: string;
     where?: string;
     status?: string;
+    url: string;
+}
+
+// PAD Team Projects type (all projects in this DB are team projects)
+export interface NotionPADProject {
+    id: string;
+    slug: string;
+    title: string;
+    description: string;
+    thumbnail?: string;
+    github?: string;
+    tags: string[];
+    where?: string;
+    status?: string;
+    date?: string;
+    link?: string;
     url: string;
 }
 
@@ -238,6 +255,125 @@ export async function getAllProjectSlugs(): Promise<string[]> {
 // Get single project by slug
 export async function getProjectBySlug(slug: string): Promise<NotionPortfolioProject | null> {
     const projects = await getProjects();
+    return projects.find((p) => p.slug === slug) || null;
+}
+
+// Fetch PAD team projects from Notion database
+export async function getPADProjects(): Promise<NotionPADProject[]> {
+    if (!NOTION_API_KEY) {
+        console.warn('NOTION_API_KEY not set, returning empty PAD projects');
+        return [];
+    }
+
+    try {
+        const response = await notionFetch(`/databases/${PAD_PROJECTS_DB_ID}/query`, {
+            method: 'POST',
+            body: JSON.stringify({
+                filter: {
+                    property: 'show',
+                    checkbox: {
+                        equals: true,
+                    },
+                },
+                sorts: [{ property: 'When', direction: 'descending' }],
+            }),
+        });
+
+        const projects: NotionPADProject[] = [];
+
+        for (const page of response.results) {
+            if (page.object !== 'page') continue;
+            const props = page.properties;
+
+            // Extract title
+            const titleProp = props['Name'];
+            const title = titleProp?.type === 'title'
+                ? extractPlainText(titleProp.title)
+                : 'Untitled';
+
+            // Extract description
+            const descProp = props['Description'];
+            const description = descProp?.type === 'rich_text'
+                ? extractPlainText(descProp.rich_text)
+                : '';
+
+            // Extract GitHub URL
+            const gitProp = props['Git'];
+            const github = gitProp?.type === 'rich_text'
+                ? extractUrl(gitProp.rich_text) || extractPlainText(gitProp.rich_text)
+                : undefined;
+
+            // Extract tags
+            const tagsProp = props['Tag'];
+            const tags = tagsProp?.type === 'multi_select'
+                ? tagsProp.multi_select.map((t: { name: string }) => t.name)
+                : [];
+
+            // Extract where
+            const whereProp = props['Where'];
+            const where = whereProp?.type === 'select'
+                ? whereProp.select?.name
+                : undefined;
+
+            // Extract status
+            const statusProp = props['Status'];
+            const status = statusProp?.type === 'status'
+                ? statusProp.status?.name
+                : undefined;
+
+            // Extract date
+            const dateProp = props['When'];
+            const date = dateProp?.type === 'date' && dateProp.date?.start
+                ? dateProp.date.start
+                : undefined;
+
+            // Extract link (from Git or external URL property if exists)
+            const link = github;
+
+            // Extract thumbnail
+            const thumbProp = props['Thumbnail'];
+            let thumbnail: string | undefined;
+            if (thumbProp?.type === 'files' && thumbProp.files?.length > 0) {
+                const file = thumbProp.files[0];
+                if (file.type === 'file') {
+                    thumbnail = file.file.url;
+                } else if (file.type === 'external') {
+                    thumbnail = file.external.url;
+                }
+            }
+
+            // Get slug from property or generate from title
+            const slugProp = props['slug'];
+            const slug = slugProp?.type === 'rich_text' && slugProp.rich_text?.length > 0
+                ? extractPlainText(slugProp.rich_text)
+                : title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+
+            projects.push({
+                id: page.id,
+                slug,
+                title,
+                description,
+                thumbnail,
+                github,
+                tags,
+                where,
+                status,
+                date,
+                link,
+                url: page.url,
+            });
+        }
+
+        return projects;
+    } catch (error) {
+        console.error('Error fetching PAD projects from Notion:', error);
+        return [];
+    }
+}
+
+// Get PAD project by slug
+export async function getPADProjectBySlug(slug: string): Promise<NotionPADProject | null> {
+    const projects = await getPADProjects();
     return projects.find((p) => p.slug === slug) || null;
 }
 

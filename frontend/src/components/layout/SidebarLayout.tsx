@@ -10,16 +10,17 @@ Rollback: Revert to previous version
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { getTeamProjects } from '@/data/projects';
 import styles from './SidebarLayout.module.css';
+import { NotionPADProject } from '@/lib/notion';
 
 interface SidebarLayoutProps {
     children: React.ReactNode;
+    projects: NotionPADProject[];
 }
 
-export default function SidebarLayout({ children }: SidebarLayoutProps) {
+export default function SidebarLayout({ children, projects }: SidebarLayoutProps) {
     const pathname = usePathname();
-    const teamProjects = getTeamProjects();
+    const teamProjects = projects;
 
     return (
         <div className={styles.sidebarLayout}>

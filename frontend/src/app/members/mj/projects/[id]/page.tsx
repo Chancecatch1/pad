@@ -9,7 +9,8 @@ Rollback: Restore previous client-side version
 import Link from 'next/link';
 import { getProjects, getPageContent } from '@/lib/notion';
 import { notFound } from 'next/navigation';
-import ProjectsContent from './ProjectsContent';
+import NotionContent from '@/components/NotionContent';
+import styles from '@/components/NotionContent.module.css';
 
 // ISR: Revalidate every 5 minutes (300 seconds)
 export const revalidate = 300;
@@ -73,7 +74,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
             {/* Project Header */}
             <section style={{ marginBottom: '32px', marginTop: '16px' }}>
                 <h1 style={{ fontWeight: 700, fontSize: '24px', marginBottom: '8px' }}>{project.title}</h1>
-                <p style={{ color: '#666', lineHeight: '1.6', marginBottom: '16px' }}>{project.description}</p>
+                <p className={styles.contentContainer} style={{ color: '#666', lineHeight: '1.6', marginBottom: '16px' }}>{project.description}</p>
 
                 {/* Tags */}
                 {project.tags.length > 0 && (
@@ -115,7 +116,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
             )}
 
             {/* Notion Content - Client Component for interactivity */}
-            <ProjectsContent content={content} />
+            <NotionContent content={content} />
         </div>
     );
 }
