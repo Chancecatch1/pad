@@ -28,7 +28,7 @@ type Props = {
   };
 };
 
-export default function VoiceTutor({ sessionId: extSessionId = null, onSession, history: extHistory, onMessage, hideMessages = false, compact = false, roleConfig }: Props) {
+export default function VoiceTutor({ sessionId: extSessionId = null, onSession, history: extHistory, onMessage, hideMessages = false, compact: _compact = false, roleConfig }: Props) {
   const [pendingAudioUrl, setPendingAudioUrl] = useState<string | null>(null);
   const [lastTutorAudioUrl, setLastTutorAudioUrl] = useState<string | null>(null);
   const [messages, setMessages] = useState<Msg[]>([]);

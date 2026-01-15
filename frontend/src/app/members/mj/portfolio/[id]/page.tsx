@@ -226,19 +226,6 @@ export default function PortfolioDetailPage() {
                         ))}
                     </div>
                 )}
-
-                {/* Links */}
-                {project.github && (
-                    <a
-                        href={project.github}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="hover:opacity-60"
-                        style={{ color: '#000', textDecoration: 'underline' }}
-                    >
-                        View on GitHub →
-                    </a>
-                )}
             </section>
 
             {/* Notion Content */}

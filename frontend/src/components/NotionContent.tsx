@@ -11,6 +11,10 @@ Rollback: Delete this file and restore original components
 import { NotionBlock } from '@/lib/notion';
 import styles from './NotionContent.module.css';
 
+/* eslint-disable @next/next/no-img-element */
+// NOTE: We intentionally use <img> instead of next/image because
+// media URLs are proxied through /api/notion-media and need dynamic src
+
 interface Props {
     content: NotionBlock[];
 }

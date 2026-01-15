@@ -68,21 +68,6 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                         ))}
                     </div>
                 )}
-
-                {/* Links */}
-                <div style={{ display: 'flex', gap: '16px' }}>
-                    {project.github && (
-                        <a
-                            href={project.github}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="hover:opacity-60"
-                            style={{ color: '#000', textDecoration: 'underline' }}
-                        >
-                            View on GitHub →
-                        </a>
-                    )}
-                </div>
             </section>
 
             {/* Notion Content - Client Component for interactivity */}
