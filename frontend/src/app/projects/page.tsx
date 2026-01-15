@@ -7,6 +7,7 @@ Rollback: Restore previous client component version
 */
 
 import { getPADProjects, NotionPADProject } from '@/lib/notion';
+import { getThumbnailUrl } from '@/lib/thumbnailProxy';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -51,7 +52,7 @@ function PADProjectCard({ project }: { project: NotionPADProject }) {
             <div style={{ width: '200px', height: '150px', background: '#e0e0e0', overflow: 'hidden' }}>
                 {project.thumbnail ? (
                     <Image
-                        src={project.thumbnail}
+                        src={getThumbnailUrl(project.id, project.thumbnail)}
                         alt={project.title}
                         width={200}
                         height={150}

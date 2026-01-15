@@ -10,7 +10,7 @@ Rollback: Revert to use static portfolio.ts
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
+import { getThumbnailUrl } from '@/lib/thumbnailProxy';
 
 interface NotionProject {
     id: string;
@@ -71,7 +71,7 @@ export default function MJPage() {
                                 <div style={{ width: '200px', height: '150px', background: '#e0e0e0', overflow: 'hidden' }}>
                                     {project.thumbnail ? (
                                         <img
-                                            src={project.thumbnail}
+                                            src={getThumbnailUrl(project.id, project.thumbnail)}
                                             alt={project.title}
                                             style={{ objectFit: 'cover', width: '100%', height: '100%' }}
                                         />

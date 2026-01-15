@@ -106,15 +106,6 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                 )}
             </section>
 
-            {/* Thumbnail */}
-            {project.thumbnail && (
-                <img
-                    src={project.thumbnail}
-                    alt={project.title}
-                    style={{ width: '100px', height: 'auto', borderRadius: '4px', marginBottom: '32px' }}
-                />
-            )}
-
             {/* Notion Content - Client Component for interactivity */}
             <NotionContent content={content} />
         </div>

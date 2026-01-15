@@ -241,15 +241,6 @@ export default function PortfolioDetailPage() {
                 )}
             </section>
 
-            {/* Thumbnail */}
-            {project.thumbnail && (
-                <img
-                    src={project.thumbnail}
-                    alt={project.title}
-                    style={{ width: '100%', height: 'auto', borderRadius: '4px', marginBottom: '32px' }}
-                />
-            )}
-
             {/* Notion Content */}
             <article>
                 {content.map(block => renderBlock(block))}
