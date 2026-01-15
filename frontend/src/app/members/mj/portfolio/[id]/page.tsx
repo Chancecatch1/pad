@@ -31,6 +31,14 @@ interface NotionProject {
     url: string;
 }
 
+// Helper to get media URL - uses proxy API if blockId is available (for fresh URLs)
+function getMediaUrl(block: NotionBlock): string {
+    if (block.id && block.url?.includes('prod-files-secure.s3')) {
+        return `/api/notion-media?blockId=${block.id}`;
+    }
+    return block.url || '';
+}
+
 export default function PortfolioDetailPage() {
     const params = useParams();
     const id = params.id as string;
@@ -125,7 +133,7 @@ export default function PortfolioDetailPage() {
                 return (
                     <figure key={block.id} style={{ marginTop: '24px', marginBottom: '24px' }}>
                         <img
-                            src={block.url}
+                            src={getMediaUrl(block)}
                             alt={block.caption || 'Project image'}
                             style={{ maxWidth: '100%', height: 'auto', borderRadius: '4px' }}
                         />
@@ -140,7 +148,7 @@ export default function PortfolioDetailPage() {
                 return (
                     <div key={block.id} style={{ marginTop: '24px', marginBottom: '24px' }}>
                         <video
-                            src={block.url}
+                            src={getMediaUrl(block)}
                             controls
                             style={{ maxWidth: '100%', borderRadius: '4px' }}
                         />

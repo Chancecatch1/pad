@@ -25,6 +25,16 @@ interface Props {
     content: NotionBlock[];
 }
 
+// Helper to get media URL - uses proxy API if blockId is available (for fresh URLs)
+function getMediaUrl(block: NotionBlock): string {
+    // Use proxy API for Notion-hosted files (they have signed URLs that expire)
+    // External URLs don't need proxying
+    if (block.id && block.url?.includes('prod-files-secure.s3')) {
+        return `/api/notion-media?blockId=${block.id}`;
+    }
+    return block.url || '';
+}
+
 export default function PortfolioContent({ content }: Props) {
     // Render a single Notion block
     const renderBlock = (block: NotionBlock): React.ReactNode => {
@@ -57,7 +67,7 @@ export default function PortfolioContent({ content }: Props) {
                 return (
                     <figure key={block.id} style={{ marginTop: '24px', marginBottom: '24px' }}>
                         <img
-                            src={block.url}
+                            src={getMediaUrl(block)}
                             alt={block.caption || 'Project image'}
                             style={{ maxWidth: '100%', height: 'auto', borderRadius: '4px' }}
                         />
@@ -72,7 +82,7 @@ export default function PortfolioContent({ content }: Props) {
                 return (
                     <div key={block.id} style={{ marginTop: '24px', marginBottom: '24px' }}>
                         <video
-                            src={block.url}
+                            src={getMediaUrl(block)}
                             controls
                             style={{ maxWidth: '100%', borderRadius: '4px' }}
                         />
@@ -82,7 +92,7 @@ export default function PortfolioContent({ content }: Props) {
                 return (
                     <div key={block.id} style={{ marginTop: '16px', marginBottom: '16px' }}>
                         <audio
-                            src={block.url}
+                            src={getMediaUrl(block)}
                             controls
                             style={{ width: '100%' }}
                         />
@@ -97,7 +107,7 @@ export default function PortfolioContent({ content }: Props) {
                 return (
                     <div key={block.id} style={{ marginTop: '12px', marginBottom: '12px' }}>
                         <a
-                            href={block.url}
+                            href={getMediaUrl(block)}
                             target="_blank"
                             rel="noopener noreferrer"
                             style={{
@@ -314,7 +324,7 @@ export default function PortfolioContent({ content }: Props) {
                 return (
                     <div key={block.id} style={{ margin: '16px 0' }}>
                         <iframe
-                            src={block.url}
+                            src={getMediaUrl(block)}
                             style={{ width: '100%', height: '600px', border: '1px solid #e0e0e0', borderRadius: '4px' }}
                         />
                         {block.caption && (
