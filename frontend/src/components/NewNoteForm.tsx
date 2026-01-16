@@ -40,6 +40,7 @@ export default function NewNoteForm() {
       />
       <textarea
         className="bg-transparent focus:outline-none"
+        style={{ resize: 'none' }}
         placeholder="Body"
         rows={2}
         value={body}

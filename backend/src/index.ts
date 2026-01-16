@@ -32,6 +32,16 @@ app.post("/notes", async (req, res) => {
   }
 });
 
+app.delete("/notes/:id", async (req, res) => {
+  try {
+    const result = await Note.findByIdAndDelete(req.params.id);
+    if (!result) return res.status(404).json({ error: "not_found" });
+    res.status(200).json({ success: true });
+  } catch (e) {
+    res.status(400).json({ error: "invalid_id" });
+  }
+});
+
 // 세션 목록
 app.get("/chat/sessions", async (_req, res) => {
   const list = await ChatSession.find().sort({ updatedAt: -1 }).lean();
