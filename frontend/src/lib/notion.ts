@@ -87,6 +87,25 @@ function extractPlainText(richText: Array<{ plain_text: string }>): string {
     return richText?.map((rt) => rt.plain_text).join('') || '';
 }
 
+// Helper to preserve rich text with formatting
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function preserveRichText(richText: any[]): { text: string; href?: string; annotations: { bold: boolean; italic: boolean; strikethrough: boolean; underline: boolean; code: boolean; color: string; }; }[] {
+    if (!richText || richText.length === 0) return [];
+
+    return richText.map((rt) => ({
+        text: rt.plain_text || '',
+        href: rt.href || rt.text?.link?.url,
+        annotations: {
+            bold: rt.annotations?.bold || false,
+            italic: rt.annotations?.italic || false,
+            strikethrough: rt.annotations?.strikethrough || false,
+            underline: rt.annotations?.underline || false,
+            code: rt.annotations?.code || false,
+            color: rt.annotations?.color || 'default',
+        },
+    }));
+}
+
 // Helper to extract URL from rich text
 function extractUrl(richText: Array<{ plain_text: string; href?: string; text?: { link?: { url: string } } }>): string | undefined {
     for (const rt of richText || []) {
@@ -377,11 +396,26 @@ export async function getPADProjectBySlug(slug: string): Promise<NotionPADProjec
     return projects.find((p) => p.slug === slug) || null;
 }
 
+// Rich text item with formatting information
+export interface RichTextItem {
+    text: string;
+    href?: string;
+    annotations: {
+        bold: boolean;
+        italic: boolean;
+        strikethrough: boolean;
+        underline: boolean;
+        code: boolean;
+        color: string;
+    };
+}
+
 // Block content types
 export interface NotionBlock {
     id: string;
     type: string;
-    content?: string;
+    content?: string;  // Kept for backwards compatibility
+    richText?: RichTextItem[];  // New: rich text with formatting
     url?: string;  // For images, links
     caption?: string;
     children?: NotionBlock[];
@@ -444,27 +478,35 @@ export async function getPageContent(pageId: string): Promise<NotionBlock[]> {
 
         switch (block.type) {
             case 'paragraph':
+                blockData.richText = preserveRichText(block.paragraph?.rich_text || []);
                 blockData.content = extractPlainText(block.paragraph?.rich_text || []);
                 break;
             case 'heading_1':
+                blockData.richText = preserveRichText(block.heading_1?.rich_text || []);
                 blockData.content = extractPlainText(block.heading_1?.rich_text || []);
                 break;
             case 'heading_2':
+                blockData.richText = preserveRichText(block.heading_2?.rich_text || []);
                 blockData.content = extractPlainText(block.heading_2?.rich_text || []);
                 break;
             case 'heading_3':
+                blockData.richText = preserveRichText(block.heading_3?.rich_text || []);
                 blockData.content = extractPlainText(block.heading_3?.rich_text || []);
                 break;
             case 'bulleted_list_item':
+                blockData.richText = preserveRichText(block.bulleted_list_item?.rich_text || []);
                 blockData.content = extractPlainText(block.bulleted_list_item?.rich_text || []);
                 break;
             case 'numbered_list_item':
+                blockData.richText = preserveRichText(block.numbered_list_item?.rich_text || []);
                 blockData.content = extractPlainText(block.numbered_list_item?.rich_text || []);
                 break;
             case 'to_do':
+                blockData.richText = preserveRichText(block.to_do?.rich_text || []);
                 blockData.content = extractPlainText(block.to_do?.rich_text || []);
                 break;
             case 'toggle':
+                blockData.richText = preserveRichText(block.toggle?.rich_text || []);
                 blockData.content = extractPlainText(block.toggle?.rich_text || []);
                 break;
             case 'image':
@@ -539,9 +581,11 @@ export async function getPageContent(pageId: string): Promise<NotionBlock[]> {
                 // Just mark as divider
                 break;
             case 'quote':
+                blockData.richText = preserveRichText(block.quote?.rich_text || []);
                 blockData.content = extractPlainText(block.quote?.rich_text || []);
                 break;
             case 'callout':
+                blockData.richText = preserveRichText(block.callout?.rich_text || []);
                 blockData.content = extractPlainText(block.callout?.rich_text || []);
                 break;
             case 'code':

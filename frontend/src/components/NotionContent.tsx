@@ -1,14 +1,14 @@
 /* CHANGE NOTE
 Why: Shared Notion content renderer for both MJ and PAD project pages
-What changed: Moved from MJ-specific ProjectsContent to shared component
-Behaviour/Assumptions: Renders all Notion block types consistently
+What changed: Added rich text rendering with formatting (bold, italic, links, colors)
+Behaviour/Assumptions: Renders all Notion block types with proper formatting
 Rollback: Delete this file and restore original components
 — mj
 */
 
 "use client";
 
-import { NotionBlock } from '@/lib/notion';
+import { NotionBlock, RichTextItem } from '@/lib/notion';
 import styles from './NotionContent.module.css';
 
 /* eslint-disable @next/next/no-img-element */
@@ -29,32 +29,125 @@ function getMediaUrl(block: NotionBlock): string {
     return block.url || '';
 }
 
+// Helper to render rich text with formatting
+function renderRichText(richText: RichTextItem[] | undefined, fallback?: string): React.ReactNode {
+    // Fallback to plain text if no rich text available
+    if (!richText || richText.length === 0) {
+        return fallback || null;
+    }
+
+    return richText.map((item, index) => {
+        let content: React.ReactNode = item.text;
+
+        // Apply formatting in order: code > bold > italic > strikethrough > underline
+        if (item.annotations.code) {
+            content = (
+                <code key={`code-${index}`} style={{
+                    background: '#f5f5f5',
+                    padding: '2px 4px',
+                    borderRadius: '3px',
+                    fontSize: '0.9em',
+                    fontFamily: 'monospace'
+                }}>
+                    {content}
+                </code>
+            );
+        }
+
+        if (item.annotations.bold) {
+            content = <strong key={`bold-${index}`}>{content}</strong>;
+        }
+
+        if (item.annotations.italic) {
+            content = <em key={`italic-${index}`}>{content}</em>;
+        }
+
+        if (item.annotations.strikethrough) {
+            content = <s key={`strike-${index}`}>{content}</s>;
+        }
+
+        if (item.annotations.underline) {
+            content = <u key={`underline-${index}`}>{content}</u>;
+        }
+
+        // Apply color if not default
+        if (item.annotations.color && item.annotations.color !== 'default') {
+            const colorMap: Record<string, string> = {
+                'gray': '#9b9a97',
+                'brown': '#64473a',
+                'orange': '#d9730d',
+                'yellow': '#dfab01',
+                'green': '#0f7b6c',
+                'blue': '#0b6e99',
+                'purple': '#6940a5',
+                'pink': '#ad1a72',
+                'red': '#e03e3e',
+                'gray_background': '#ebeced',
+                'brown_background': '#e9e5e3',
+                'orange_background': '#faebdd',
+                'yellow_background': '#fbf3db',
+                'green_background': '#ddedea',
+                'blue_background': '#ddebf1',
+                'purple_background': '#eae4f2',
+                'pink_background': '#f4dfeb',
+                'red_background': '#fbe4e4',
+            };
+
+            const isBackground = item.annotations.color.includes('_background');
+            const colorValue = colorMap[item.annotations.color] || item.annotations.color;
+
+            content = (
+                <span key={`color-${index}`} style={isBackground ? { backgroundColor: colorValue, padding: '2px 0' } : { color: colorValue }}>
+                    {content}
+                </span>
+            );
+        }
+
+        // Wrap in link if href exists
+        if (item.href) {
+            content = (
+                <a
+                    key={`link-${index}`}
+                    href={item.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ color: '#0066cc', textDecoration: 'underline' }}
+                >
+                    {content}
+                </a>
+            );
+        }
+
+        return <span key={index}>{content}</span>;
+    });
+}
+
 export default function NotionContent({ content }: Props) {
     // Render a single Notion block
     const renderBlock = (block: NotionBlock): React.ReactNode => {
         switch (block.type) {
             case 'paragraph':
-                return block.content ? (
+                return (block.richText?.length || block.content) ? (
                     <p key={block.id} style={{ marginBottom: '16px', lineHeight: '1.8' }}>
-                        {block.content}
+                        {renderRichText(block.richText, block.content)}
                     </p>
                 ) : null;
             case 'heading_1':
                 return (
                     <h1 key={block.id} style={{ fontWeight: 700, fontSize: '24px', marginTop: '32px', marginBottom: '16px' }}>
-                        {block.content}
+                        {renderRichText(block.richText, block.content)}
                     </h1>
                 );
             case 'heading_2':
                 return (
                     <h2 key={block.id} style={{ fontWeight: 700, fontSize: '20px', marginTop: '24px', marginBottom: '12px' }}>
-                        {block.content}
+                        {renderRichText(block.richText, block.content)}
                     </h2>
                 );
             case 'heading_3':
                 return (
                     <h3 key={block.id} style={{ fontWeight: 700, fontSize: '16px', marginTop: '20px', marginBottom: '8px' }}>
-                        {block.content}
+                        {renderRichText(block.richText, block.content)}
                     </h3>
                 );
             case 'image':
@@ -164,7 +257,7 @@ export default function NotionContent({ content }: Props) {
                         fontStyle: 'italic',
                         color: '#444'
                     }}>
-                        {block.content}
+                        {renderRichText(block.richText, block.content)}
                     </blockquote>
                 );
             case 'callout':
@@ -175,7 +268,7 @@ export default function NotionContent({ content }: Props) {
                         borderRadius: '4px',
                         margin: '16px 0'
                     }}>
-                        {block.content}
+                        {renderRichText(block.richText, block.content)}
                     </div>
                 );
             case 'code':
@@ -200,7 +293,7 @@ export default function NotionContent({ content }: Props) {
                 return (
                     <details key={block.id} style={{ marginBottom: '8px' }}>
                         <summary style={{ cursor: 'pointer', fontWeight: 500 }}>
-                            {block.content}
+                            {renderRichText(block.richText, block.content)}
                         </summary>
                         <div style={{ paddingLeft: '16px', marginTop: '8px' }}>
                             {block.children?.map(renderBlock)}
@@ -211,7 +304,7 @@ export default function NotionContent({ content }: Props) {
                 return (
                     <div key={block.id} style={{ marginBottom: '8px', display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
                         <input type="checkbox" disabled style={{ marginTop: '4px' }} />
-                        <span>{block.content}</span>
+                        <span>{renderRichText(block.richText, block.content)}</span>
                     </div>
                 );
             case 'table':
@@ -336,7 +429,7 @@ export default function NotionContent({ content }: Props) {
                         lineHeight: '1.6',
                         listStyleType: 'disc'
                     }}>
-                        {block.content}
+                        {renderRichText(block.richText, block.content)}
                         {block.children && block.children.length > 0 && (
                             <ul style={{ marginTop: '8px', paddingLeft: '0' }}>
                                 {block.children.map(renderBlock)}
@@ -352,7 +445,7 @@ export default function NotionContent({ content }: Props) {
                         lineHeight: '1.6',
                         listStyleType: 'decimal'
                     }}>
-                        {block.content}
+                        {renderRichText(block.richText, block.content)}
                         {block.children && block.children.length > 0 && (
                             <ul style={{ marginTop: '8px', paddingLeft: '0' }}>
                                 {block.children.map(renderBlock)}
