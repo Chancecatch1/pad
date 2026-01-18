@@ -1,7 +1,7 @@
 /* CHANGE NOTE
 Why: Homepage shows PAD team projects (Projects section from sidebar)
-What changed: Display team projects grid instead of member portfolio projects
-Behaviour/Assumptions: Uses static team project data, not Notion portfolio
+What changed: Added thumbnail proxy to prevent Notion image expiration
+Behaviour/Assumptions: Uses getThumbnailUrl() for Notion-hosted images
 Rollback: Revert to previous version
 — mj
 */
@@ -9,6 +9,7 @@ Rollback: Revert to previous version
 import Link from 'next/link';
 import Image from 'next/image';
 import { getPADProjects } from '@/lib/notion';
+import { getThumbnailUrl } from '@/lib/thumbnailProxy';
 import styles from './page.module.css';
 
 export const revalidate = 300; // ISR
@@ -32,11 +33,12 @@ export default async function HomePage() {
             <div className={styles.thumbnailContainer}>
               {project.thumbnail ? (
                 <Image
-                  src={project.thumbnail}
+                  src={getThumbnailUrl(project.id, project.thumbnail)}
                   alt={project.title}
                   width={200}
                   height={150}
                   className={styles.thumbnail}
+                  unoptimized
                 />
               ) : (
                 <div className={styles.thumbnailPlaceholder}>
