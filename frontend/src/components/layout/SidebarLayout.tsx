@@ -75,20 +75,38 @@ export default function SidebarLayout({ children, projects }: SidebarLayoutProps
                         </ul>
                     </div>
 
-                    {/* Bottom group - Notes and Contact together */}
-                    <div className={styles.navBottomGroup}>
-                        <Link
-                            href="/notes"
-                            className={`${styles.navLink} ${pathname === '/notes' ? styles.navLinkActive : ''}`}
-                        >
-                            Notes
-                        </Link>
-                        <Link
-                            href="/contact"
-                            className={`${styles.navLink} ${pathname === '/contact' ? styles.navLinkActive : ''}`}
-                        >
-                            Contact
-                        </Link>
+                    {/* Notes Link */}
+                    <Link
+                        href="/notes"
+                        className={`${styles.navLink} ${pathname === '/notes' ? styles.navLinkActive : ''}`}
+                        style={{ fontWeight: 700 }}
+                    >
+                        Notes
+                    </Link>
+
+                    {/* Contact Section */}
+                    <div className={styles.navSection}>
+                        <span className={styles.navLabel}>Contact</span>
+                        <ul className={styles.projectList}>
+                            <li>
+                                <a
+                                    href="https://www.instagram.com/pine_at_dawn"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className={styles.navLink}
+                                >
+                                    Instagram
+                                </a>
+                            </li>
+                            <li>
+                                <a
+                                    href="mailto:padcollective@gmail.com"
+                                    className={styles.navLink}
+                                >
+                                    Mail
+                                </a>
+                            </li>
+                        </ul>
                     </div>
                 </nav>
             </aside>

@@ -37,7 +37,7 @@
 .sidebarNav {
     display: flex;
     flex-direction: column;
-    gap: 17px;
+    gap: 27px;
     margin-top: 27px;
     flex: 1;
 }
@@ -86,16 +86,10 @@
 }
 
 .navAbout {
-    margin-top: 17px;
+    /* distinct class kept if needed for future, but margin removed for uniform spacing */
 }
 
-/* Bottom section - Notes and Contact together */
-.navBottomGroup {
-    margin-top: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-}
+/* Bottom section styles removed, now part of main flow */
 
 .mainContent {
     margin-left: 215px;
