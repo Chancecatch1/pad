@@ -18,6 +18,7 @@ type Props = {
   onMessage?: (msg: Msg) => void;
   hideMessages?: boolean;
   compact?: boolean;
+  apiKey?: string;
   roleConfig?: {
     persona?: string;
     scenario?: string;
@@ -28,7 +29,7 @@ type Props = {
   };
 };
 
-export default function VoiceTutor({ sessionId: extSessionId = null, onSession, history: extHistory, onMessage, hideMessages = false, compact: _compact = false, roleConfig }: Props) {
+export default function VoiceTutor({ sessionId: extSessionId = null, onSession, history: extHistory, onMessage, hideMessages = false, compact: _compact = false, apiKey, roleConfig }: Props) {
   const [pendingAudioUrl, setPendingAudioUrl] = useState<string | null>(null);
   const [lastTutorAudioUrl, setLastTutorAudioUrl] = useState<string | null>(null);
   const [messages, setMessages] = useState<Msg[]>([]);
@@ -55,7 +56,7 @@ export default function VoiceTutor({ sessionId: extSessionId = null, onSession, 
       const r = await fetch("/api/tutor/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: userText, history: historyTurns, ...(roleConfig || {}) }),
+        body: JSON.stringify({ message: userText, history: historyTurns, apiKey, ...(roleConfig || {}) }),
       });
       const data = await r.json();
       const reply = data?.reply ?? "";
@@ -68,7 +69,7 @@ export default function VoiceTutor({ sessionId: extSessionId = null, onSession, 
         const ttsRes = await fetch("/api/tutor/tts", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text: reply }),
+          body: JSON.stringify({ text: reply, apiKey }),
         });
         const blob = await ttsRes.blob();
         const url = URL.createObjectURL(blob);
@@ -94,6 +95,7 @@ export default function VoiceTutor({ sessionId: extSessionId = null, onSession, 
     try {
       const form = new FormData();
       form.append("audio", blob, "speech.webm");
+      form.append("apiKey", apiKey || "");
       const r = await fetch("/api/tutor/stt", { method: "POST", body: form });
       const data = await r.json();
       const text = data?.text?.trim?.() ?? "";

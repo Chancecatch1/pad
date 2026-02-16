@@ -18,6 +18,7 @@ export default function TutorPage() {
   const [materials, setMaterials] = useState("");
   const [targetPhrases, setTargetPhrases] = useState<string[]>([]);
   const [optionsOpen, setOptionsOpen] = useState(false);
+  const [apiKey, setApiKey] = useState("");
 
   const levelOptions = ["A2", "B1", "B2", "C1"];
   const personaOptions = ["Ordinary Person", "Interviewer", "Superviser", "Audience"];
@@ -34,6 +35,18 @@ export default function TutorPage() {
       <h1 style={{ fontWeight: 700, fontSize: '16px', marginBottom: '50px' }}>Tutor</h1>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '17px' }}>
+        {/* API Key */}
+        <section>
+          <div className="font-medium mb-1">OpenAI API Key</div>
+          <input
+            type="password"
+            className="w-full bg-transparent focus:outline-none"
+            placeholder="sk-..."
+            value={apiKey}
+            onChange={e => setApiKey(e.target.value)}
+          />
+          {!apiKey && <div className="text-gray-400 text-xs mt-1">Enter your OpenAI API key to use the tutor</div>}
+        </section>
         {/* Role-play options */}
         <section>
           <div className="flex items-center gap-4 mb-2">
@@ -147,6 +160,7 @@ export default function TutorPage() {
           onMessage={(msg) => setMessages((m) => [...m, msg])}
           hideMessages
           compact
+          apiKey={apiKey}
           roleConfig={{
             level: selectedLevel,
             materials: materials.split(/\n\n+/).map((s) => s.trim()).filter(Boolean),

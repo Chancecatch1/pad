@@ -1,11 +1,14 @@
 import OpenAI from "openai";
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { text, voice = "alloy", instructions, speed = 1 } = body || {};
+    const { text, voice = "alloy", instructions, speed = 1, apiKey } = body || {};
+
+    if (!apiKey) {
+      return new Response("api_key_required", { status: 401 });
+    }
+    const openai = new OpenAI({ apiKey });
     if (!text || typeof text !== "string") {
       return new Response("text required", { status: 400 });
     }

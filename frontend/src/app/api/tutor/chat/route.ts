@@ -1,8 +1,6 @@
 import OpenAI from "openai";
 const MODEL = process.env.OPENAI_CHAT_MODEL || "gpt-5-nano";
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-
 type Turn = { role: "user" | "assistant"; content: string };
 type ClientBody = {
   message: string;
@@ -13,11 +11,17 @@ type ClientBody = {
   level?: string;
   learner?: string;
   targetPhrases?: string[];
+  apiKey?: string;
 };
 
 export async function POST(req: Request) {
   try {
-    const { message, history = [], persona, scenario, materials, level, targetPhrases = [], learner } = (await req.json()) as ClientBody;
+    const { message, history = [], persona, scenario, materials, level, targetPhrases = [], learner, apiKey } = (await req.json()) as ClientBody;
+
+    if (!apiKey) {
+      return Response.json({ error: "api_key_required" }, { status: 401 });
+    }
+    const openai = new OpenAI({ apiKey });
 
     const parts: string[] = [
       "You are an English speaking tutor and conversation partner.",
