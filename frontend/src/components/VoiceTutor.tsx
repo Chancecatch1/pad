@@ -1,8 +1,8 @@
 /* CHANGE NOTE
-Why: TeamVoid minimal style - buttons without boxes, just text with hover
-What changed: Removed lofi variant's bg/border, simplified to text-only buttons
-Behaviour/Assumptions: Clean text buttons with opacity hover
-Rollback: Revert to previous version
+Why: Redesigned control bar — recording indicator, cleaner type box, better spacing
+What changed: Controls have dot indicator for recording, separator dots, refined layout
+Behaviour/Assumptions: Minimal text-only buttons matching PAD aesthetic
+Rollback: git checkout -- src/components/VoiceTutor.tsx
 — mj
 */
 
@@ -155,17 +155,29 @@ export default function VoiceTutor({ sessionId: extSessionId = null, onSession, 
     });
   }
 
+  const canPlay = !busy && (!!pendingAudioUrl || !!lastTutorAudioUrl);
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-      {/* Control buttons - simple text, no boxes */}
-      <div style={{ display: 'flex', gap: '16px' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+      {/* ── Control bar ── */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '14px' }}>
         <button
           onClick={recording ? stopRec : startRec}
           disabled={busy}
-          className={`hover:opacity-60 disabled:opacity-30 ${recording ? 'font-bold' : ''}`}
+          className="hover:opacity-60 disabled:opacity-30"
+          style={{ display: 'flex', alignItems: 'center', gap: '5px' }}
         >
-          {recording ? "Stop" : "record"}
+          {recording && (
+            <span style={{
+              width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#e55',
+              display: 'inline-block',
+              animation: 'pulse 1.2s ease-in-out infinite',
+            }} />
+          )}
+          {recording ? "stop" : "record"}
         </button>
+
+        <span style={{ opacity: 0.15 }}>·</span>
 
         <button
           onClick={async () => {
@@ -175,32 +187,38 @@ export default function VoiceTutor({ sessionId: extSessionId = null, onSession, 
                 const a = new Audio(audioUrl);
                 await a.play();
               } finally {
-                if (pendingAudioUrl) {
-                  setPendingAudioUrl(null);
-                }
+                if (pendingAudioUrl) setPendingAudioUrl(null);
               }
             }
           }}
-          disabled={busy || (!pendingAudioUrl && !lastTutorAudioUrl)}
+          disabled={!canPlay}
           className="hover:opacity-60 disabled:opacity-30"
         >
           play
         </button>
 
+        <span style={{ opacity: 0.15 }}>·</span>
+
         <button
           onClick={() => setShowTypeBox((v) => !v)}
           disabled={busy}
-          className={`hover:opacity-60 disabled:opacity-30 ${showTypeBox ? 'font-bold' : ''}`}
+          className="hover:opacity-60 disabled:opacity-30"
+          style={{
+            borderBottom: showTypeBox ? '1.5px solid currentColor' : '1.5px solid transparent',
+            paddingBottom: '1px',
+            transition: 'border-color 0.15s ease',
+          }}
         >
           type
         </button>
 
-        {busy && <span className="opacity-50">Processing…</span>}
+        {busy && <span style={{ opacity: 0.35, fontSize: '12px', marginLeft: '8px' }}>processing…</span>}
       </div>
 
+      {/* ── Type box ── */}
       {showTypeBox && (
         <form
-          style={{ display: 'flex', gap: '8px' }}
+          style={{ display: 'flex', gap: '8px', alignItems: 'center' }}
           onSubmit={async (e) => {
             e.preventDefault();
             const t = manualText.trim();
@@ -214,30 +232,53 @@ export default function VoiceTutor({ sessionId: extSessionId = null, onSession, 
             placeholder="Type a message..."
             value={manualText}
             onChange={(e) => setManualText(e.target.value)}
+            style={{ borderBottom: '1px solid rgba(128,128,128,0.2)', paddingBottom: '4px', fontSize: '14px' }}
+            autoFocus
           />
           <button
             disabled={busy || !manualText.trim()}
             type="submit"
             className="hover:opacity-60 disabled:opacity-30"
+            style={{ fontSize: '14px' }}
           >
-            Send
+            →
           </button>
         </form>
       )}
 
+      {/* ── Messages (only shown when hideMessages is false) ── */}
       {!hideMessages && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           {messages.map((m, i) => (
-            <div key={i}>
-              <span className="text-gray-400 mr-2">{m.role === "user" ? "You" : "Tutor"}:</span>
-              <span>{m.text}</span>
+            <div
+              key={i}
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: m.role === 'user' ? 'flex-end' : 'flex-start',
+              }}
+            >
+              <span style={{ fontSize: '11px', opacity: 0.35, marginBottom: '2px' }}>
+                {m.role === "user" ? "You" : "Tutor"}
+              </span>
+              <span style={{ fontSize: '14px' }}>{m.text}</span>
               {m.correction && (
-                <div className="text-gray-500 mt-1">{m.correction}</div>
+                <span style={{ fontSize: '12px', opacity: 0.45, fontStyle: 'italic', marginTop: '3px' }}>
+                  {m.correction}
+                </span>
               )}
             </div>
           ))}
         </div>
       )}
+
+      {/* Recording pulse animation */}
+      <style>{`
+        @keyframes pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.3; }
+        }
+      `}</style>
     </div>
   );
 }
