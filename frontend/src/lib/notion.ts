@@ -136,7 +136,10 @@ export async function getProjects(): Promise<NotionPortfolioProject[]> {
                         equals: true,
                     },
                 },
-                sorts: [{ property: 'When', direction: 'descending' }],
+                sorts: [
+                    { property: 'Status', direction: 'ascending' },
+                    { property: 'When', direction: 'descending' },
+                ],
             }),
         });
 
@@ -206,6 +209,12 @@ export async function getProjects(): Promise<NotionPortfolioProject[]> {
                 ? extractPlainText(slugProp.rich_text)
                 : title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 
+            // Extract status
+            const statusProp = props['Status'];
+            const status = statusProp?.type === 'status'
+                ? statusProp.status?.name
+                : undefined;
+
             projects.push({
                 id: page.id,
                 slug,
@@ -217,6 +226,7 @@ export async function getProjects(): Promise<NotionPortfolioProject[]> {
                 languages,
                 employer,
                 where,
+                status,
                 url: page.url,
             });
         }
