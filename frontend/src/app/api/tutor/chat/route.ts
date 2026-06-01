@@ -16,6 +16,7 @@ import {
   tutorErrorResponse,
   type SpeechMetrics,
 } from "@/lib/tutorProviders";
+import { resolveBackendBase } from "@/lib/backendProxy";
 
 type Turn = { role: "user" | "assistant"; content: string };
 type LearnerProfile = {
@@ -263,7 +264,7 @@ function isActiveMemoryNote(expiresAt?: string) {
 
 async function updateLearnerPractice(profileId: string, payload: Record<string, unknown>) {
   try {
-    const base = process.env.TUTOR_BACKEND_API_BASE ?? "http://localhost:4000";
+    const base = resolveBackendBase();
     const response = await fetch(`${base}/tutor/profiles/${profileId}/practice`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },

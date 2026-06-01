@@ -1,32 +1,44 @@
-# PAD - Pine At Dawn
+# PAD Web
 
-> Creative collective portfolio
+Website source for PAD - Pine At Dawn.
 
-## Live Site
+Live site: https://pineatdawn.me
 
-**https://pineatdawn.me**
+## Current Runtime
 
-## Overview
-
-PAD is a creative collective founded by two Koreans in Canada. We blend technology, design, space planning, and arts & culture.
-
-## Tech Stack
-
-| Layer | Technology |
-|-------|------------|
+| Area | Stack |
+| --- | --- |
 | Frontend | Next.js 15, React 19, TypeScript |
 | Backend | Express 5, MongoDB |
-| Deploy | Vercel (frontend), Heroku (backend) |
+| Content | Notion databases and pages |
+| Deploy | Vercel frontend, Heroku backend |
+| Local tutor | Mac UI plus Windows `hxi-ws01` local STT/chat/TTS over Tailscale |
 
-## Quick Start
+## Local Development
+
+Run commands from the `pad` conda environment.
 
 ```bash
-npm run dev          # Full stack (frontend + backend)
+conda activate pad
+cd /Users/myungjunlee/Documents/Research/Projects/Pad/web
+npm run dev
 ```
 
-## Team
+Frontend: http://localhost:3000
+Backend: http://localhost:4000
 
-| Member | Role |
-|--------|------|
-| **Mj** | HCI Researcher, ML Engineer |
-| **Sol** | Designer |
+## Build Check
+
+```bash
+npm --prefix frontend run build
+npm --prefix backend run build
+```
+
+## Active Features
+
+- Notion-driven PAD projects and Mj portfolio pages.
+- Guestbook notes through the backend API.
+- Local-only English Tutor at `/tutor`.
+- Wedding Exhibition XR wrapper at `/xr/wedding-exhibition`; direct route is deployable, but keep it unpromoted until media/privacy polish is complete.
+
+Tutor details live in `docs/local-first-english-tutor.md`.

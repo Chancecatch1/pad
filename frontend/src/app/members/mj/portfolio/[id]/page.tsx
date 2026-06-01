@@ -11,6 +11,7 @@ Rollback: Delete this file
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface NotionBlock {
     id: string;
@@ -132,9 +133,12 @@ export default function PortfolioDetailPage() {
             case 'image':
                 return (
                     <figure key={block.id} style={{ marginTop: '24px', marginBottom: '24px' }}>
-                        <img
+                        <Image
                             src={getMediaUrl(block)}
                             alt={block.caption || 'Project image'}
+                            width={800}
+                            height={450}
+                            unoptimized
                             style={{ maxWidth: '100%', height: 'auto', borderRadius: '4px' }}
                         />
                         {block.caption && (

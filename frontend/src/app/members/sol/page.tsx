@@ -8,6 +8,7 @@ Rollback: Revert to previous version
 
 "use client";
 
+import Image from 'next/image';
 import { getMember } from '@/data/members';
 import opdImage from '@/images/opd.png';
 
@@ -49,9 +50,11 @@ export default function SolPage() {
                     >
                         {/* Image container */}
                         <div style={{ width: '200px', height: '150px', background: '#e0e0e0', overflow: 'hidden' }}>
-                            <img
-                                src={opdImage.src}
+                            <Image
+                                src={opdImage}
                                 alt="One Pine Day"
+                                width={200}
+                                height={150}
                                 style={{ objectFit: 'cover', width: '100%', height: '100%' }}
                             />
                         </div>

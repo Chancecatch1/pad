@@ -6,20 +6,19 @@ Rollback: rm src/app/api/tutor/profiles/login/route.ts
 - mj
 */
 
+import { backendUnavailableResponse, proxyJsonResponse, resolveBackendBase } from "@/lib/backendProxy";
+
 export async function POST(req: Request) {
-  const base = process.env.TUTOR_BACKEND_API_BASE ?? "http://localhost:4000";
-  const body = await req.json();
-  const response = await fetch(`${base}/tutor/profiles/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
-  const text = await response.text();
-  let data: unknown;
+  const base = resolveBackendBase();
   try {
-    data = JSON.parse(text);
-  } catch {
-    data = { raw: text };
+    const body = await req.json();
+    const response = await fetch(`${base}/tutor/profiles/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    return proxyJsonResponse(response);
+  } catch (error) {
+    return backendUnavailableResponse(error, "POST /tutor/profiles/login");
   }
-  return Response.json(data, { status: response.status });
 }

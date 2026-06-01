@@ -23,30 +23,6 @@ export async function generateStaticParams() {
     }));
 }
 
-interface NotionBlock {
-    id: string;
-    type: string;
-    content?: string;
-    url?: string;
-    caption?: string;
-    children?: NotionBlock[];
-    tableRows?: string[][];
-    title?: string;
-    pageId?: string;
-    href?: string;
-}
-
-interface NotionProject {
-    id: string;
-    slug: string;
-    title: string;
-    description: string;
-    thumbnail?: string;
-    github?: string;
-    tags: string[];
-    url: string;
-}
-
 interface PageProps {
     params: Promise<{ id: string }>;
 }
