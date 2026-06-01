@@ -1,5 +1,5 @@
 export async function GET() {
-  const base = process.env.BACKEND_API_BASE ?? "http://localhost:4000";
+  const base = process.env.TUTOR_BACKEND_API_BASE ?? "http://localhost:4000";
   const r = await fetch(`${base}/chat/sessions`, { cache: "no-store" });
   const text = await r.text();
   let data: unknown;
@@ -8,7 +8,7 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
-  const base = process.env.BACKEND_API_BASE ?? "http://localhost:4000";
+  const base = process.env.TUTOR_BACKEND_API_BASE ?? "http://localhost:4000";
   const body = await req.json();
   const r = await fetch(`${base}/chat/sessions`, {
     method: "POST",

@@ -12,6 +12,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import styles from './SidebarLayout.module.css';
 import { NotionPADProject } from '@/lib/notion';
+import { localProjectLinks } from '@/lib/localProjectLinks';
 
 interface SidebarLayoutProps {
     children: React.ReactNode;
@@ -44,6 +45,16 @@ export default function SidebarLayout({ children, projects }: SidebarLayoutProps
                                     <Link
                                         href={`/projects/${project.slug}`}
                                         className={`${styles.navLink} ${pathname === `/projects/${project.slug}` ? styles.navLinkActive : ''}`}
+                                    >
+                                        {project.title}
+                                    </Link>
+                                </li>
+                            ))}
+                            {localProjectLinks.map((project) => (
+                                <li key={project.id}>
+                                    <Link
+                                        href={project.href}
+                                        className={`${styles.navLink} ${pathname === project.href ? styles.navLinkActive : ''}`}
                                     >
                                         {project.title}
                                     </Link>

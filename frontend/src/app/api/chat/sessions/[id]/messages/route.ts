@@ -2,7 +2,7 @@ export async function POST(req: Request, ctx: { params: Promise<{ id?: string }>
   const { id } = await ctx.params;
   if (!id) return Response.json({ error: "missing_id" }, { status: 400 });
 
-  const base = process.env.BACKEND_API_BASE ?? "http://localhost:4000";
+  const base = process.env.TUTOR_BACKEND_API_BASE ?? "http://localhost:4000";
   const body = await req.json();
 
   const r = await fetch(`${base}/chat/sessions/${id}/messages`, {
